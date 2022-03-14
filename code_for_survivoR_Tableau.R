@@ -1,6 +1,6 @@
 ## Author: Carly Levitz
 ## Date written: 2021-12-09
-## Date updated: 2022-03-11
+## Date updated: 2022-03-14
 ## Purpose: data cleaning of Survivor data  - prep the data from https://github.com/doehm/survivoR and then use these data in Tableau
 ##    https://public.tableau.com/app/profile/carly.levitz/viz/SurvivorCBSData-Acknowledgements/Acknkowledgements
 ## File organization:
@@ -649,6 +649,31 @@ tribemap <- read.csv(paste(savedir,"survivoR_10_tribemap_cleaned.csv",sep=""),he
           group_by(version,version_season,season,castaway_id) %>%
           summarize(totalTCattended=n_distinct(day))
         
+        ## Number of TCs at which received votes
+        ## Filter out the non-person votes
+        receivedvotesat <- votehx %>% select(version,version_season,vote_id,day) %>%
+                          filter(!(is.na(vote_id))) %>%
+                          rename(castaway_id=vote_id) %>%
+                          group_by(version,version_season,castaway_id) %>%
+                          summarise(tcsatwhichreceivedvotes=n_distinct(day))
+        
+              ## double checking by looking pre and post merge
+              receivedvotespremerge <- votehx %>% select(version,version_season,vote_id,day,tribe_status) %>%
+                filter(!(is.na(vote_id)) & tribe_status != "Merged") %>%
+                rename(castaway_id=vote_id) %>%
+                group_by(version,version_season,castaway_id) %>%
+                summarise(tcsatwhichreceivedvotespremerge=n_distinct(day))
+              
+              receivedvotespostmerge <- votehx %>% select(version,version_season,vote_id,day,tribe_status) %>%
+                filter(!(is.na(vote_id)) & tribe_status == "Merged") %>%
+                rename(castaway_id=vote_id) %>%
+                group_by(version,version_season,castaway_id) %>%
+                summarise(tcsatwhichreceivedvotespostmerge=n_distinct(day))
+              
+              receivedvotesatTCs <- full_join(full_join(receivedvotesat,receivedvotespremerge),receivedvotespostmerge)
+              
+              
+        
         ## number of votes received (in one season and across seasons)
         votesreceivedinoneseason <- votehx %>% select(version,version_season,season,vote_id) %>%
           group_by(version,version_season,season,vote_id) %>%
@@ -689,14 +714,14 @@ tribemap <- read.csv(paste(savedir,"survivoR_10_tribemap_cleaned.csv",sep=""),he
           summarize(accuratevotescast=sum(count))      
         
         # Bring tribal council superlatives together
-          tribalcouncilindivsuper <- full_join(full_join(
+          tribalcouncilindivsuper <- full_join(full_join(full_join(
             full_join(
               full_join(
                 full_join(
                   full_join(
                     full_join(premerge,votesreceivedinoneseason),votesreceived),
                   votesnullifiedoneseason),votesnullified),
-              votescast),accuratevotescast),totaltcs) %>%
+              votescast),accuratevotescast),totaltcs),receivedvotesatTCs) %>%
             group_by(version,version_season,season,castaway_id) %>%
             mutate(percentaccuracy=accuratevotescast/votescast)
     

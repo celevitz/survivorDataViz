@@ -817,9 +817,9 @@ tribemap <- read.csv(paste(savedir,"survivoR_10_tribemap_cleaned.csv",sep=""),he
     # Add in additional variables
         finaldata <- castaways %>% group_by(version,version_season,season,castaway_id) %>%
           filter(day==max(day)) %>% 
-          select(version,version_season,season,season_name,castaway_id,full_name,castaway,age,day,order,result,jury_status) %>%
+          select(version,version_season,season,season_name,castaway_id,full_name,castaway,age,order,result,jury_status) %>%
           full_join(individualsuperlatives) %>%
-          full_join(castaway_details %>% select(castaway_id,gender,poc))
+          full_join(castaway_details %>% select(castaway_id,gender,poc)) 
         finaldata <- finaldata %>% filter(castaway_id != "USNA")
         
         ## Add on result and gender-race-result specific confessional data   

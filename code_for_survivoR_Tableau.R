@@ -672,7 +672,12 @@ tribemap <- read.csv(paste(savedir,"survivoR_10_tribemap_cleaned.csv",sep=""),he
               
               receivedvotesatTCs <- full_join(full_join(receivedvotesat,receivedvotespremerge),receivedvotespostmerge)
               
-              
+        ## Days until first vote was received      
+          dayoffirstvotereceived <- votehx %>% select(version,version_season,day,vote_id) %>%
+                                      filter(!(is.na(vote_id))) %>%
+                                      group_by(version,version_season,vote_id) %>%
+                                      summarize(dayoffirstvote=min(day)) %>%
+                                      rename(castaway_id=vote_id)
         
         ## number of votes received (in one season and across seasons)
         votesreceivedinoneseason <- votehx %>% select(version,version_season,season,vote_id) %>%
@@ -714,14 +719,14 @@ tribemap <- read.csv(paste(savedir,"survivoR_10_tribemap_cleaned.csv",sep=""),he
           summarize(accuratevotescast=sum(count))      
         
         # Bring tribal council superlatives together
-          tribalcouncilindivsuper <- full_join(full_join(full_join(
+          tribalcouncilindivsuper <- full_join(full_join(full_join(full_join(
             full_join(
               full_join(
                 full_join(
                   full_join(
                     full_join(premerge,votesreceivedinoneseason),votesreceived),
                   votesnullifiedoneseason),votesnullified),
-              votescast),accuratevotescast),totaltcs),receivedvotesatTCs) %>%
+              votescast),accuratevotescast),totaltcs),receivedvotesatTCs),dayoffirstvotereceived) %>%
             group_by(version,version_season,season,castaway_id) %>%
             mutate(percentaccuracy=accuratevotescast/votescast)
     
@@ -812,7 +817,7 @@ tribemap <- read.csv(paste(savedir,"survivoR_10_tribemap_cleaned.csv",sep=""),he
     # Add in additional variables
         finaldata <- castaways %>% group_by(version,version_season,season,castaway_id) %>%
           filter(day==max(day)) %>% 
-          select(version,version_season,season,season_name,castaway_id,full_name,castaway,age,order,result,jury_status) %>%
+          select(version,version_season,season,season_name,castaway_id,full_name,castaway,age,day,order,result,jury_status) %>%
           full_join(individualsuperlatives) %>%
           full_join(castaway_details %>% select(castaway_id,gender,poc))
         finaldata <- finaldata %>% filter(castaway_id != "USNA")

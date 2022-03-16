@@ -817,7 +817,7 @@ tribemap <- read.csv(paste(savedir,"survivoR_10_tribemap_cleaned.csv",sep=""),he
     # Add in additional variables
         finaldata <- castaways %>% group_by(version,version_season,season,castaway_id) %>%
           filter(day==max(day)) %>% 
-          select(version,version_season,season,season_name,castaway_id,full_name,castaway,age,order,result,jury_status) %>%
+          select(version,version_season,season,season_name,castaway_id,full_name,castaway,age,day,order,result,jury_status) %>%
           full_join(individualsuperlatives) %>%
           full_join(castaway_details %>% select(castaway_id,gender,poc)) 
         finaldata <- finaldata %>% filter(castaway_id != "USNA")
@@ -829,7 +829,8 @@ tribemap <- read.csv(paste(savedir,"survivoR_10_tribemap_cleaned.csv",sep=""),he
         #finaldata$superlativetype <- "Individual by season"
         #finaldata$superlativetype[finaldata$variable %in% c("immwins","numberoftimesplayed","rewwins","totaldaysoverall","tribalimmwins","tribalrewwins","votesreceived","votesnullified")] <- "Individual across seasons"
         
-    
-
+    ## for days until first vote, if they never received a vote, replace the 0 with the day they lasted in the game (should only be relevant for people who made it to final tribal council, people who were medi-vac'd, elimiinated by rocks or idoled out)
+      finaldata$dayoffirstvote[finaldata$dayoffirstvote %in% 0 & !(is.na(finaldata$day))] <- finaldata$day[finaldata$dayoffirstvote %in% 0 & !(is.na(finaldata$day))]
+      
 # save data
 write.csv(finaldata,paste(savedir,"survivoR_supeRlatives.csv",sep=""),row.names=F)

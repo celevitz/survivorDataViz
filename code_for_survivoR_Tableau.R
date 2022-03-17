@@ -850,7 +850,7 @@ savedir <- "H:/R/survivoR/02_cleaned_data/"
 firstvotes <- read.csv(paste(savedir,"survivoR_supeRlatives.csv",sep=""))
 firstvotes <- firstvotes %>% 
               ## keep just the relevant information
-                select(version,version_season,season,season_name,castaway_id,full_name,castaway,day,order,result,gender,poc,dayoffirstvote) %>%
+                select(version,version_season,season,season_name,castaway_id,full_name,castaway,day,result,gender,poc,dayoffirstvote) %>%
                 distinct() %>%
               ## number of days in the season
                 group_by(version,version_season) %>%
@@ -864,34 +864,128 @@ firstvotes <- firstvotes %>%
               ## percent of THEIR game lasted without votes
                 group_by(version,version_season,castaway_id) %>%
                 mutate(percentoftheirgamelastedwithoutvotes=dayoffirstvote/day)  %>%
-              ## reshape for tableau (tableau is better in "long" form)
-                pivot_longer(!(c(version,version_season,season,season_name,castaway_id,full_name,castaway,order,result,gender,poc)),names_to="variable",values_to="value")
+              ## add variable that indicates that this is the specific person's data.
+                mutate(analysis_level="person-specific")
 
 ## Analysis by gender, race, and result
-    firstvoteanalysis <- firstvotes %>% group_by(version,result,gender,poc,variable) %>%
-                          summarize(avgbyResultGenderPOC=mean(value,na.rm=T))
+#### This isn't working right now because of the pivots...
+## want to edit this so that the clumns are the variables like day, day of first vote, percent of game lasted, etc, instead of avg by gender result, avg by race result, etc.
+    firstvoteanalysis <- firstvotes %>% 
+                          group_by(version,result,gender,poc) %>%
+                          summarize(dayoffirstvote=mean(dayoffirstvote,na.rm=T),
+                                    numberofdays=mean(numberofdays,na.rm=T),
+                                    day=mean(day,na.rm=T),
+                                    percentofseasonlasted=mean(percentofseasonlasted,na.rm=T),
+                                    percentofseasonlastedwithoutvotes=mean(percentofseasonlastedwithoutvotes,na.rm=T),
+                                    percentoftheirgamelastedwithoutvotes=mean(percentoftheirgamelastedwithoutvotes,na.rm=T)) %>%
+                          rename(racegenderresult_dayoffirstvote=dayoffirstvote,
+                                 racegenderresult_numberofdays=numberofdays,
+                                 racegenderresult_day=day,
+                                 racegenderresult_percentofseasonlasted=percentofseasonlasted,
+                                 racegenderresult_percentofseasonlastedwithoutvotes=percentofseasonlastedwithoutvotes,
+                                 racegenderresult_percentoftheirgamelastedwithoutvotes=percentoftheirgamelastedwithoutvotes)
+    
+    firstvoteanalysis_justGender <- firstvotes %>% 
+      group_by(version,gender) %>%
+      summarize(dayoffirstvote=mean(dayoffirstvote,na.rm=T),
+                numberofdays=mean(numberofdays,na.rm=T),
+                day=mean(day,na.rm=T),
+                percentofseasonlasted=mean(percentofseasonlasted,na.rm=T),
+                percentofseasonlastedwithoutvotes=mean(percentofseasonlastedwithoutvotes,na.rm=T),
+                percentoftheirgamelastedwithoutvotes=mean(percentoftheirgamelastedwithoutvotes,na.rm=T)) %>%
+      rename(gender_dayoffirstvote=dayoffirstvote,
+             gender_numberofdays=numberofdays,
+             gender_day=day,
+             gender_percentofseasonlasted=percentofseasonlasted,
+             gender_percentofseasonlastedwithoutvotes=percentofseasonlastedwithoutvotes,
+             gender_percentoftheirgamelastedwithoutvotes=percentoftheirgamelastedwithoutvotes)
+    
+    firstvoteanalysis_justRace <- firstvotes %>% 
+      group_by(version,poc) %>%
+      summarize(dayoffirstvote=mean(dayoffirstvote,na.rm=T),
+                numberofdays=mean(numberofdays,na.rm=T),
+                day=mean(day,na.rm=T),
+                percentofseasonlasted=mean(percentofseasonlasted,na.rm=T),
+                percentofseasonlastedwithoutvotes=mean(percentofseasonlastedwithoutvotes,na.rm=T),
+                percentoftheirgamelastedwithoutvotes=mean(percentoftheirgamelastedwithoutvotes,na.rm=T)) %>%
+      rename(poc_dayoffirstvote=dayoffirstvote,
+             poc_numberofdays=numberofdays,
+             poc_day = day,
+             poc_percentofseasonlasted=percentofseasonlasted,
+             poc_percentofseasonlastedwithoutvotes=percentofseasonlastedwithoutvotes,
+             poc_percentoftheirgamelastedwithoutvotes=percentoftheirgamelastedwithoutvotes)
 
-    firstvoteanalysis_justGender <- firstvotes %>% group_by(version,gender,variable) %>%
-                                    summarize(avgbyGender=mean(value,na.rm=T))
+    firstvoteanalysis_justResult <- firstvotes %>% 
+      group_by(version,result) %>%
+      summarize(dayoffirstvote=mean(dayoffirstvote,na.rm=T),
+                numberofdays=mean(numberofdays,na.rm=T),
+                day=mean(day,na.rm=T),
+                percentofseasonlasted=mean(percentofseasonlasted,na.rm=T),
+                percentofseasonlastedwithoutvotes=mean(percentofseasonlastedwithoutvotes,na.rm=T),
+                percentoftheirgamelastedwithoutvotes=mean(percentoftheirgamelastedwithoutvotes,na.rm=T)) %>%
+      rename(result_dayoffirstvote=dayoffirstvote,
+             result_numberofdays=numberofdays,
+             result_day=day,
+             result_percentofseasonlasted=percentofseasonlasted,
+             result_percentofseasonlastedwithoutvotes=percentofseasonlastedwithoutvotes,
+             result_percentoftheirgamelastedwithoutvotes=percentoftheirgamelastedwithoutvotes)
     
-    firstvoteanalysis_justRace <- firstvotes %>% group_by(version,poc,variable) %>%
-                                  summarize(avgbyPOC=mean(value,na.rm=T))
+    firstvoteanalysis_GenderPOC <- firstvotes %>% 
+      group_by(version,gender,poc) %>%
+      summarize(dayoffirstvote=mean(dayoffirstvote,na.rm=T),
+                numberofdays=mean(numberofdays,na.rm=T),
+                day=mean(day,na.rm=T),
+                percentofseasonlasted=mean(percentofseasonlasted,na.rm=T),
+                percentofseasonlastedwithoutvotes=mean(percentofseasonlastedwithoutvotes,na.rm=T),
+                percentoftheirgamelastedwithoutvotes=mean(percentoftheirgamelastedwithoutvotes,na.rm=T)) %>%
+      rename(racegender_dayoffirstvote=dayoffirstvote,
+             racegender_numberofdays=numberofdays,
+             racegender_day=day,
+             racegender_percentofseasonlasted=percentofseasonlasted,
+             racegender_percentofseasonlastedwithoutvotes=percentofseasonlastedwithoutvotes,
+             racegender_percentoftheirgamelastedwithoutvotes=percentoftheirgamelastedwithoutvotes)    
     
-    firstvoteanalysis_justResult <- firstvotes %>% group_by(version,result,variable) %>%
-                                    summarize(avgbyResult=mean(value,na.rm=T))
+    firstvoteanalysis_GenderResult <- firstvotes %>% 
+      group_by(version,gender,result) %>%
+      summarize(dayoffirstvote=mean(dayoffirstvote,na.rm=T),
+                numberofdays=mean(numberofdays,na.rm=T),
+                day=mean(day,na.rm=T),
+                percentofseasonlasted=mean(percentofseasonlasted,na.rm=T),
+                percentofseasonlastedwithoutvotes=mean(percentofseasonlastedwithoutvotes,na.rm=T),
+                percentoftheirgamelastedwithoutvotes=mean(percentoftheirgamelastedwithoutvotes,na.rm=T)) %>%
+      rename(resultgender_dayoffirstvote=dayoffirstvote,
+             resultgender_numberofdays=numberofdays,
+             resultgender_day=day,
+             resultgender_percentofseasonlasted=percentofseasonlasted,
+             resultgender_percentofseasonlastedwithoutvotes=percentofseasonlastedwithoutvotes,
+             resultgender_percentoftheirgamelastedwithoutvotes=percentoftheirgamelastedwithoutvotes)        
     
-    firstvoteanalysis_GenderPOC <- firstvotes %>% group_by(version,gender,poc,variable) %>%
-                                    summarize(avgbyGenderRace=mean(value,na.rm=T))    
+    firstvoteanalysis_POCResult <- firstvotes %>% 
+      group_by(version,poc,result) %>%
+      summarize(dayoffirstvote=mean(dayoffirstvote,na.rm=T),
+                numberofdays=mean(numberofdays,na.rm=T),
+                day=mean(day,na.rm=T),
+                percentofseasonlasted=mean(percentofseasonlasted,na.rm=T),
+                percentofseasonlastedwithoutvotes=mean(percentofseasonlastedwithoutvotes,na.rm=T),
+                percentoftheirgamelastedwithoutvotes=mean(percentoftheirgamelastedwithoutvotes,na.rm=T)) %>%
+      rename(resultPOC_dayoffirstvote=dayoffirstvote,
+             resultPOC_numberofdays=numberofdays,
+             resultPOC_day=day,
+             resultPOC_percentofseasonlasted=percentofseasonlasted,
+             resultPOC_percentofseasonlastedwithoutvotes=percentofseasonlastedwithoutvotes,
+             resultPOC_percentoftheirgamelastedwithoutvotes=percentoftheirgamelastedwithoutvotes)  
     
-    firstvoteanalysis_GenderResult <- firstvotes %>% group_by(version,gender,result,variable) %>%
-                                      summarize(avgbyGenderResult=mean(value,na.rm=T))        
-    
-    firstvoteanalysis_POCResult <- firstvotes %>% group_by(version,poc,result,variable) %>%
-                                    summarize(avgbyPOCResult=mean(value,na.rm=T))       
+     
 
 # Bring analysis together with the data
-    firstvotesfinal <- full_join(full_join(full_join(full_join(full_join(full_join(full_join(firstvotes,firstvoteanalysis),firstvoteanalysis_justGender),firstvoteanalysis_justRace),firstvoteanalysis_justResult),firstvoteanalysis_GenderPOC),firstvoteanalysis_GenderResult),firstvoteanalysis_POCResult)
-  
+    firstvotesanalysisfinal <- full_join(full_join(full_join(full_join(full_join(full_join(firstvoteanalysis,firstvoteanalysis_justGender),firstvoteanalysis_justRace),firstvoteanalysis_justResult),firstvoteanalysis_GenderPOC),firstvoteanalysis_GenderResult),firstvoteanalysis_POCResult) %>%
+            pivot_longer(!(c(version,result,gender,poc)),names_to = "variable",values_to="value") %>%
+            separate(variable,c("analysis_level","variable"),sep="_")
+    
+    firstvotesfinal <- firstvotes %>% pivot_longer(!(c(version,version_season,season,season_name,castaway_id,full_name,castaway,result,gender,poc,analysis_level)),
+                                                   names_to="variable",values_to="value") %>%
+                                    bind_rows(firstvotesanalysisfinal) %>%
+                                    pivot_wider(names_from=variable,values_from=value)
 
 
 # save data

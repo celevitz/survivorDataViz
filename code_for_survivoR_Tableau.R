@@ -863,10 +863,39 @@ firstvotes <- firstvotes %>%
                 mutate(percentofseasonlastedwithoutvotes=dayoffirstvote/numberofdays) %>%
               ## percent of THEIR game lasted without votes
                 group_by(version,version_season,castaway_id) %>%
-                mutate(percentoftheirgamelastedwithoutvotes=dayoffirstvote/day)    
+                mutate(percentoftheirgamelastedwithoutvotes=dayoffirstvote/day)  %>%
+              ## reshape for tableau (tableau is better in "long" form)
+                pivot_longer(!(c(version,version_season,season,season_name,castaway_id,full_name,castaway,order,result,gender,poc)),names_to="variable",values_to="value")
+
+## Analysis by gender, race, and result
+    firstvoteanalysis <- firstvotes %>% group_by(version,result,gender,poc,variable) %>%
+                          summarize(avgbyResultGenderPOC=mean(value,na.rm=T))
+
+    firstvoteanalysis_justGender <- firstvotes %>% group_by(version,gender,variable) %>%
+                                    summarize(avgbyGender=mean(value,na.rm=T))
+    
+    firstvoteanalysis_justRace <- firstvotes %>% group_by(version,poc,variable) %>%
+                                  summarize(avgbyPOC=mean(value,na.rm=T))
+    
+    firstvoteanalysis_justResult <- firstvotes %>% group_by(version,result,variable) %>%
+                                    summarize(avgbyResult=mean(value,na.rm=T))
+    
+    firstvoteanalysis_GenderPOC <- firstvotes %>% group_by(version,gender,poc,variable) %>%
+                                    summarize(avgbyGenderRace=mean(value,na.rm=T))    
+    
+    firstvoteanalysis_GenderResult <- firstvotes %>% group_by(version,gender,result,variable) %>%
+                                      summarize(avgbyGenderResult=mean(value,na.rm=T))        
+    
+    firstvoteanalysis_POCResult <- firstvotes %>% group_by(version,poc,result,variable) %>%
+                                    summarize(avgbyPOCResult=mean(value,na.rm=T))       
+
+# Bring analysis together with the data
+    firstvotesfinal <- full_join(full_join(full_join(full_join(full_join(full_join(full_join(firstvotes,firstvoteanalysis),firstvoteanalysis_justGender),firstvoteanalysis_justRace),firstvoteanalysis_justResult),firstvoteanalysis_GenderPOC),firstvoteanalysis_GenderResult),firstvoteanalysis_POCResult)
+  
+
 
 # save data
-write.csv(firstvotes,paste(savedir,"survivoR_firstvotesreceived.csv",sep=""),row.names=F)
+write.csv(firstvotesfinal,paste(savedir,"survivoR_firstvotesreceived.csv",sep=""),row.names=F)
 
 
 

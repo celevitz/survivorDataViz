@@ -7,6 +7,7 @@
 ##    Section 1: Clean the data for how I want to use it in Tableau
 ##    Section 2: Create a dataset for the tribe mapping. It's pretty inelegant but does the trick.
 ##    Section 3: Calculate different types of superlatives for each castaway. Superlatives can be within a season (e.g., most votes received in one season) or across seasons (e.g., most individual immunity wins across seasons played)
+##    Section 4: Additional analysis: racial and gender differences in day of first vote
 
 rm(list=ls()); .libPaths("C:/Program Files/R/R-4.1.1/library")
 library(devtools,lib="C:/Program Files/R/R-4.1.1/library"); library(ggplot2,lib="C:/Program Files/R/R-4.1.1/library") ; library(tidyverse,lib="C:/Program Files/R/R-4.1.1/library")
@@ -834,3 +835,41 @@ tribemap <- read.csv(paste(savedir,"survivoR_10_tribemap_cleaned.csv",sep=""),he
       
 # save data
 write.csv(finaldata,paste(savedir,"survivoR_supeRlatives.csv",sep=""),row.names=F)
+
+
+#############################################################################################################################
+#############################################################################################################################
+## Section 4: Additional analysis: racial and gender differences in day of first vote
+#############################################################################################################################
+#############################################################################################################################
+
+rm(list=ls())
+library(tidyverse,lib="C:/Program Files/R/R-4.1.1/library");library(tidygraph,lib="C:/Program Files/R/R-4.1.1/library"); library(survivoR,lib="C:/Program Files/R/R-4.1.1/library"); library(ggpubr,lib="C:/Program Files/R/R-4.1.1/library"); library(ggrepel,lib="C:/Program Files/R/R-4.1.1/library");library(ggraph,lib="C:/Program Files/R/R-4.1.1/library");  
+savedir <- "H:/R/survivoR/02_cleaned_data/"
+
+firstvotes <- read.csv(paste(savedir,"survivoR_supeRlatives.csv",sep=""))
+firstvotes <- firstvotes %>% 
+              ## keep just the relevant information
+                select(version,version_season,season,season_name,castaway_id,full_name,castaway,day,order,result,gender,poc,dayoffirstvote) %>%
+                distinct() %>%
+              ## number of days in the season
+                group_by(version,version_season) %>%
+                mutate(numberofdays=max(day)) %>%
+              ## percent of season that the person lasted
+                group_by(version,version_season,castaway_id) %>%
+                mutate(percentofseasonlasted=day/numberofdays) %>%
+              ## percent of season lasted without votes
+                group_by(version,version_season,castaway_id) %>%
+                mutate(percentofseasonlastedwithoutvotes=dayoffirstvote/numberofdays) %>%
+              ## percent of THEIR game lasted without votes
+                group_by(version,version_season,castaway_id) %>%
+                mutate(percentoftheirgamelastedwithoutvotes=dayoffirstvote/day)    
+
+# save data
+write.csv(firstvotes,paste(savedir,"survivoR_firstvotesreceived.csv",sep=""),row.names=F)
+
+
+
+
+
+

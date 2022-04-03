@@ -63,11 +63,15 @@ castawaydetails <- read.csv(paste(savedir,"survivoR_01_castawayDetails_cleaned.c
                               select(short_name,castaway_id,gender,poc) %>%
                               rename(castaway=short_name)) %>%
                   # % of game that was post-merge, that they lasted
-                  mutate(daysinpostmerge=daysinseason-dayofchallenge,percentofpostmergethattheylasted=dayslastedpostwin/daysinpostmerge)
+                  mutate(daysinpostmerge=daysinseason-dayofchallenge,percentofpostmergethattheylasted=dayslastedpostwin/daysinpostmerge) %>%
+                  # number of indiv imm challenge wins
+                  left_join(challenges %>%
+                              filter(outcome_type == "Individual" & challenge_type %in% c("Immunity","Reward and Immunity") & tribe == "(Individual challenge)") %>%
+                              group_by(version,version_season,castaway_id) %>%
+                              mutate(tempcount=1) %>%
+                              summarise(indivimmwononeseason=sum(tempcount)))
 
 write.csv(firstii,paste(savedir,"survivor_firstImmChallWinner.csv",sep=""),row.names=F)
 
 
-
-## # of people of color that won indiv imm, # of people of color that the game started with
 

@@ -291,6 +291,19 @@ castawaydetails$race[is.na(castawaydetails$race) | castawaydetails$race == ""] <
     ## Season 42 - Zach's vote ID should be considered NA because he used a shot in the dark
       vote_history$vote_id[vote_history$vote == "Shot in the dark"] <- NA
       
+    ## add extra votes in
+			vote_history <- rbind(vote_history,
+			                      # Worlds Apart: Dan had an extra vote that he bought at the auction. He used it against Carolyn on Day 35, but both of his votes were negated by Carolyn's idol; he went home. He won it on Day 25.			                      
+			                          c("US","US30","Survivor: Worlds Apart","30","13","35","Merged","Dan",NA,"Carolyn",NA,NA,"TRUE","Dan",13,1,"US0455","US0459","US0455"),
+                            #	Kaoh Rong: Tai had an extra vote. He put both votes on Michele on Day 32, as his alliance decided to vote out Jason. He found it on Day 25.
+			                          c("US","US32","Survivor: Kaoh Rong",32,12,32,"Merged","Tai",NA,"Michele",NA,NA,"FALSE","Jason",13,1,"US0476","US0478","US0473"),
+			                      #	Game Changers: Day 14 Debbie got it on Exile. "Advantage menu". Used it on Day 24, voted against Ozzy twice. 
+			                          c("US","US34","Survivor: Game Changers",34,7,24,"Merged","Debbie",NA,"Ozzy",NA,NA,"FALSE","Ozzy",9,1,"US0470","US0201","US0201"),
+                            # Ghost Island: Kellyn on Day 18 - played for reward and received the Vote Steal from Game Changers that turns into extra vote. Kellyn cast two votes on Day 29 (double elimination) for Laurel. After vote tied, Kellyn voted for Michael WITHOUT using extra vote.
+			                      c("US","US36","Survivor: Ghost Island",36,10,29,"Merged","Kellyn",NA,"Laurel",NA,NA,"FALSE","Tie",12,1,"US0530","US0534",NA),
+			                      # Edge of Extinction: Day 21 - another hidden on Extinction, Aubry found it. Gifted it to Aurora. Day 27 Aurora transferred it to Ron, who reclaimed it the following day. Day 28 gave it to Gavin. Gavin ended up using it against Ron
+			                      c("US","US38","Survivor: Edge of Extinction",38,11,31,"Merged","Gavin","Individual","Ron",NA,NA,"FALSE","Ron",13,1,"US0570","US0565","US0565"))
+      
 ## Add full name, gender, race, ethnicity to all tibbles
   fullnames <- unique(castawaydetails[,c("full_name","castaway_id","short_name","gender","race","ethnicity","poc")])
   names(fullnames) <- c("full_name","castaway_id","castaway","gender","race","ethnicity","poc")

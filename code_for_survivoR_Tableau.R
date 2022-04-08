@@ -288,6 +288,9 @@ castawaydetails$race[is.na(castawaydetails$race) | castawaydetails$race == ""] <
     # Day 36 of Season 31 looks messy and weird.
       vote_history$nullified[vote_history$version_season == "US31" & vote_history$day == 36 & vote_history$vote == "Kelley"] <- TRUE
       
+    ## Season 42 - Zach's vote ID should be considered NA because he used a shot in the dark
+      vote_history$vote_id[vote_history$vote == "Shot in the dark"] <- NA
+      
 ## Add full name, gender, race, ethnicity to all tibbles
   fullnames <- unique(castawaydetails[,c("full_name","castaway_id","short_name","gender","race","ethnicity","poc")])
   names(fullnames) <- c("full_name","castaway_id","castaway","gender","race","ethnicity","poc")

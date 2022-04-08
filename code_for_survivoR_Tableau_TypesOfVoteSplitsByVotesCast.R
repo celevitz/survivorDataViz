@@ -1,6 +1,7 @@
 ## Carly Levitz
 ## 4/7/2022
 ## Purpose: what are the different ways votes are split when different numbers of votes are cast?
+## Note - first need to run code_for_survivoR_Tableau.R to get the needed data file
 
 
 rm(list=ls())

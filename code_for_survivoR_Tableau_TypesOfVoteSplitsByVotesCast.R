@@ -69,6 +69,7 @@ votes <-full_join( full_join(votescast,numberreceiving),
     votes$votetype[votes$votetype %in% c("1-3-1","1-1-3")] <- "3-1-1"
     votes$votetype[votes$votetype %in% c("2-3")] <- "3-2"
     votes$votetype[votes$votetype %in% c("1-4")] <- "4-1"
+    votes$votetype[votes$votetype %in% c("1-2-2","2-1-2")] <- "2-2-1" 
   # 6 votes
     votes$votetype[votes$votetype %in% c("1-4-1","1-1-4")] <- "4-1-1"  
     votes$votetype[votes$votetype %in% c("1-5")] <- "5-1"
@@ -109,7 +110,26 @@ votes <-full_join( full_join(votescast,numberreceiving),
     votes$votetype[votes$votetype %in% c("4-5")] <- "5-4"
     votes$votetype[votes$votetype %in% c("2-5-2","2-2-5")] <- "5-2-2" 
   #10 votes
+    votes$votetype[votes$votetype %in% c("1-1-1-1-1-4-1")] <- "4-1-1-1-1-1-1" 
+    votes$votetype[votes$votetype %in% c("5-1-3-1")] <- "5-3-1-1" 
+    votes$votetype[votes$votetype %in% c("7-1-2")] <- "7-2-1" 
+    votes$votetype[votes$votetype %in% c("5-2-3")] <- "5-3-2"
+    votes$votetype[votes$votetype %in% c("4-5-1")] <- "5-4-1" 
+    votes$votetype[votes$votetype %in% c("4-2-4")] <- "4-4-2"
+    votes$votetype[votes$votetype %in% c("3-5-2","2-3-5")] <- "5-3-2"
+    votes$votetype[votes$votetype %in% c("1-6-3")] <- "6-3-1"
+    votes$votetype[votes$votetype %in% c("4-6")] <- "6-4"
+    votes$votetype[votes$votetype %in% c("3-7")] <- "7-3"
+    votes$votetype[votes$votetype %in% c("2-8")] <- "8-2"
+    votes$votetype[votes$votetype %in% c("1-9")] <- "9-1" 
   # 11 votes
+    votes$votetype[votes$votetype %in% c("4-7")] <- "7-4" 
+    votes$votetype[votes$votetype %in% c("5-6")] <- "6-5" 
+    votes$votetype[votes$votetype %in% c("1-8-2")] <- "8-2-1" 
+    votes$votetype[votes$votetype %in% c("1-9-1")] <- "9-1-1" 
+    votes$votetype[votes$votetype %in% c("2-7-2")] <- "7-2-2" 
+    votes$votetype[votes$votetype %in% c("6-2-3")] <- "6-3-2"
+    votes$votetype[votes$votetype %in% c("2-6-2-1","2-2-1-6","2-2-6-1")] <- "6-2-2-1" 
   # 12 votes
     votes$votetype[votes$votetype %in% c("2-10")] <- "10-2" 
     votes$votetype[votes$votetype %in% c("3-9")] <- "9-3"
@@ -127,6 +147,8 @@ votes <-full_join( full_join(votescast,numberreceiving),
     votes$votetype[votes$votetype %in% c("1-2-4-6","1-2-6-4","1-4-2-6","1-4-6-2","1-6-4-2","1-6-2-4","2-1-4-6","2-4-1-6","2-4-6-1","2-1-6-4","2-6-1-4","2-6-4-1","4-6-2-1","4-6-1-2","4-1-2-6","4-1-6-2","4-2-6-1","4-2-1-6","6-4-1-2","6-2-1-4","6-2-4-1","6-1-2-4","6-1-4-2")] <- "6-4-2-1"
     votes$votetype[votes$votetype %in% c("2-2-3-6","2-2-6-3","3-2-2-6","3-2-6-2","3-6-2-2","6-2-3-2","6-2-2-3")] <- "6-3-2-2"
   #16 votes
+    votes$votetype[votes$votetype %in% c("5-3-5-3")] <- "5-5-3-3" 
+    
     
     
     

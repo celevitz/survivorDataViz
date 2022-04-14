@@ -40,6 +40,12 @@ season_summary <- survivoR::season_summary
   season_summary$version_season <- paste("US",as.character(season_summary$season),sep="")
   for (sn in 1:9) { season_summary$version_season[season_summary$season == sn] <- paste("US0",as.character(season_summary$season[season_summary$season == sn]),sep="") }
   
+  # manually add in data for S42 until it's updated in dev
+  season_summary$premiered[season_summary$version_season == "US42"] <- "2022-03-09" 
+  season_summary$timeslot[season_summary$version_season == "US42"] <- "Wednesday 8:00 pm"
+  season_summary$filming_started[season_summary$version_season == "US42"] <- "2021-05-16"
+  season_summary$filming_ended[season_summary$version_season == "US42"] <- "2021-06-10"
+  
 hidden_idols <- survivoR::hidden_idols
   hidden_idols$version <- "US"
   hidden_idols$version_season <- paste("US",as.character(hidden_idols$season),sep="")
@@ -74,6 +80,9 @@ castawaydetails$race[is.na(castawaydetails$race) | castawaydetails$race == ""] <
   # Peih-Gee in Season 31 is missing ethnicity data
     castawaydetails$ethnicity[castawaydetails$short_name == "Peih-Gee" & is.na(castawaydetails$ethnicity)] <- "Hong Konger American"
   
+  # Want to distinguish between Black players and other players of color
+    castawaydetails$poc[grep("Black",castawaydetails$race)] <- "Black"
+    
   # visually check that all of the people who show up more than once have the same data for 
       #tempcast <- castaways[,c(1:9)]
       #tempcast$countofrows <- NA

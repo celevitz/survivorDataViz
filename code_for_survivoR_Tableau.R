@@ -614,6 +614,7 @@ savedir <- "H:/R/survivoR/02_cleaned_data/"
 
 
 castaways <- read.csv(paste(savedir,"survivoR_02_castaways_cleaned.csv",sep=""),header=T)
+castawaydetails <- read.csv(paste(savedir,"survivoR_01_castawayDetails_cleaned.csv",sep=""),header=T)
 votehx <- read.csv(paste(savedir,"survivoR_04_votehx_cleaned.csv",sep=""),header=T)
 challenges <- read.csv(paste(savedir,"survivoR_05_challenges_cleaned.csv",sep=""),header=T)
 confessionals <- read.csv(paste(savedir,"survivoR_06_confessionals_cleaned.csv",sep=""),header=T)
@@ -865,7 +866,7 @@ tribemap <- read.csv(paste(savedir,"survivoR_10_tribemap_cleaned.csv",sep=""),he
           filter(day==max(day)) %>% 
           select(version,version_season,season,season_name,castaway_id,full_name,castaway,age,day,order,result,jury_status) %>%
           full_join(individualsuperlatives) %>%
-          full_join(castaway_details %>% select(castaway_id,gender,poc)) 
+          full_join(castawaydetails %>% select(castaway_id,gender,poc)) 
         finaldata <- finaldata %>% filter(castaway_id != "USNA")
         
         ## Add on result and gender-race-result specific confessional data   

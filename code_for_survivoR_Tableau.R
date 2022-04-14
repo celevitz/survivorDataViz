@@ -678,7 +678,9 @@ tribemap <- read.csv(paste(savedir,"survivoR_10_tribemap_cleaned.csv",sep=""),he
                     full_join(full_join(indivimmwinsoneseason,indivimmwins),
                               indivrewwinsoneseason),indivrewwins),
                   tribalimmwinsoneseason),tribalimmwins),
-              tribalrewwinsoneseason),tribalrewwins) 
+              tribalrewwinsoneseason),tribalrewwins) %>%
+              # drop the Auction "wins"
+              filter(castaway_id != "USNA")
     
     ## B. Tribal Council information  
         ## number of times went to tc before merge

@@ -10,7 +10,6 @@
 ## Note 4/13/2022: 
 ## -- added some stuff for those still in S42 so they would show up on dashboards (day & result)
 ## -- Removed the extra votes because they were added into the raw data.
-## -- did a manual fix for my data entry error in episode 2 of S42; will remove this when we upload the data again.
 
 rm(list=ls()); .libPaths("C:/Program Files/R/R-4.1.1/library")
 library(devtools,lib="C:/Program Files/R/R-4.1.1/library"); library(ggplot2,lib="C:/Program Files/R/R-4.1.1/library") ; library(tidyverse,lib="C:/Program Files/R/R-4.1.1/library")
@@ -20,16 +19,12 @@ savedir <- "H:/R/survivoR/02_cleaned_data/"
 castaways <- survivoR::castaways
   ## For now, have the season 42 folks have "still in the game" as their "result"
   castaways$result[castaways$version_season == "US42" & is.na(castaways$result)] <- "Still in game"
-  castaways$day[castaways$version_season == "US42" & is.na(castaways$day)] <- 14
+  castaways$day[castaways$version_season == "US42" & is.na(castaways$day)] <- 26
   
 castawaydetails <- survivoR::castaway_details
 challenges <- survivoR::challenge_results
 challengesdesc <- survivoR::challenge_description
 vote_history <- survivoR::vote_history
-  ## S42 E2 data fix
-  vote_history$voted_out_id[vote_history$version_season == "US42" & vote_history$episode == 2] <- "US0618"
-  vote_history$vote_id[vote_history$version_season == "US42" & vote_history$episode == 2 & vote_history$castaway != "Marya"] <- "US0618" 
-
 confessionals <- survivoR::confessionals
   confessionals$version <- "US"
   confessionals$version_season <- paste("US",as.character(confessionals$season),sep="")

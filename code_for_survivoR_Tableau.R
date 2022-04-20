@@ -745,7 +745,7 @@ tribemap <- read.csv(paste(savedir,"survivoR_10_tribemap_cleaned.csv",sep=""),he
         
         ## number of votes cast per season
         votescast <- votehx %>% 
-          filter(!(vote %in% c("-","Black Rock","countback","Do or Die","Eliminated","Exiled","Immune","Kidnap","Lose","None","Purple Rock","Saved","Shot in the dark","White Rock","Yellow Rock"))) %>%
+          filter(!(is.na(vote_id))) %>%
           select(version,version_season,season,castaway_id) %>%            
           mutate(count=1) %>%
           group_by(version,version_season,season,castaway_id) %>%
@@ -753,7 +753,7 @@ tribemap <- read.csv(paste(savedir,"survivoR_10_tribemap_cleaned.csv",sep=""),he
         
         ## number of accurate votes cast per season  
         accuratevotescast <- votehx %>% 
-          filter(!(vote %in% c("-","Black Rock","countback","Do or Die","Eliminated","Exiled","Immune","Kidnap","Lose","None","Purple Rock","Saved","Shot in the dark","White Rock","Yellow Rock"))) %>%
+          filter(!(is.na(vote_id))) %>%
           select(version,version_season,season,castaway_id,vote_id,voted_out_id) %>%    
           filter(vote_id == voted_out_id) %>%
           mutate(count=1) %>%

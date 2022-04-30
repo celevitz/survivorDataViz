@@ -44,7 +44,13 @@ numbervotesreceivedbyperson <- votehx %>%
     # for a given vote event, what was the split?
     for (u in unique(numbervotesreceivedbyperson$uniquevoteid)) {
       
-      votetypeforuniqueid <- paste(numbervotesreceivedbyperson$votesreceivedbyperson[numbervotesreceivedbyperson$uniquevoteid == u][1],numbervotesreceivedbyperson$votesreceivedbyperson[numbervotesreceivedbyperson$uniquevoteid == u][2],numbervotesreceivedbyperson$votesreceivedbyperson[numbervotesreceivedbyperson$uniquevoteid == u][3],numbervotesreceivedbyperson$votesreceivedbyperson[numbervotesreceivedbyperson$uniquevoteid == u][4],numbervotesreceivedbyperson$votesreceivedbyperson[numbervotesreceivedbyperson$uniquevoteid == u][5],numbervotesreceivedbyperson$votesreceivedbyperson[numbervotesreceivedbyperson$uniquevoteid == u][6],numbervotesreceivedbyperson$votesreceivedbyperson[numbervotesreceivedbyperson$uniquevoteid == u][7],sep="-")
+      votetypeforuniqueid <- paste(sort(numbervotesreceivedbyperson$votesreceivedbyperson[numbervotesreceivedbyperson$uniquevoteid == u],decreasing=T)[1],
+                                   sort(numbervotesreceivedbyperson$votesreceivedbyperson[numbervotesreceivedbyperson$uniquevoteid == u],decreasing=T)[2],
+                                   sort(numbervotesreceivedbyperson$votesreceivedbyperson[numbervotesreceivedbyperson$uniquevoteid == u],decreasing=T)[3],
+                                   sort(numbervotesreceivedbyperson$votesreceivedbyperson[numbervotesreceivedbyperson$uniquevoteid == u],decreasing=T)[4],
+                                   sort(numbervotesreceivedbyperson$votesreceivedbyperson[numbervotesreceivedbyperson$uniquevoteid == u],decreasing=T)[5],
+                                   sort(numbervotesreceivedbyperson$votesreceivedbyperson[numbervotesreceivedbyperson$uniquevoteid == u],decreasing=T)[6],
+                                   sort(numbervotesreceivedbyperson$votesreceivedbyperson[numbervotesreceivedbyperson$uniquevoteid == u],decreasing=T)[7],sep="-")
       #votessplitamongst <- paste(numbervotesreceivedbyperson$votesreceivedbyperson[numbervotesreceivedbyperson$uniquevoteid == u][1],numbervotesreceivedbyperson$votesreceivedbyperson[numbervotesreceivedbyperson$uniquevoteid == u][2],numbervotesreceivedbyperson$votesreceivedbyperson[numbervotesreceivedbyperson$uniquevoteid == u][3],numbervotesreceivedbyperson$votesreceivedbyperson[numbervotesreceivedbyperson$uniquevoteid == u][4],numbervotesreceivedbyperson$votesreceivedbyperson[numbervotesreceivedbyperson$uniquevoteid == u][5],numbervotesreceivedbyperson$votesreceivedbyperson[numbervotesreceivedbyperson$uniquevoteid == u][6],numbervotesreceivedbyperson$votesreceivedbyperson[numbervotesreceivedbyperson$uniquevoteid == u][7],sep="-")
       numbervotesreceivedbyperson$votetype[numbervotesreceivedbyperson$uniquevoteid == u] <- votetypeforuniqueid
     }
@@ -58,101 +64,6 @@ numbervotesreceivedbyperson <- numbervotesreceivedbyperson %>%
 ## Bring all together
 votes <-full_join( full_join(votescast,numberreceiving),
              numbervotesreceivedbyperson)
-
-
-## do a little clean-up
-  # 3 votes
-    votes$votetype[votes$votetype %in% c("1-2")] <- "2-1"
-  # 4 votes
-    votes$votetype[votes$votetype %in% c("1-3")] <- "3-1"
-  # 5 votes
-    votes$votetype[votes$votetype %in% c("1-3-1","1-1-3")] <- "3-1-1"
-    votes$votetype[votes$votetype %in% c("2-3")] <- "3-2"
-    votes$votetype[votes$votetype %in% c("1-4")] <- "4-1"
-    votes$votetype[votes$votetype %in% c("1-2-2","2-1-2")] <- "2-2-1" 
-  # 6 votes
-    votes$votetype[votes$votetype %in% c("1-4-1","1-1-4")] <- "4-1-1"  
-    votes$votetype[votes$votetype %in% c("1-5")] <- "5-1"
-    votes$votetype[votes$votetype %in% c("1-3-2","1-2-3","2-3-1","2-1-3","3-1-2")] <- "3-2-1"
-    votes$votetype[votes$votetype %in% c("2-4")] <- "4-2"
-  # 7 votes
-    votes$votetype[votes$votetype %in% c("1-4-2","1-2-4","2-1-4","2-4-1")] <- "4-2-1"  
-    votes$votetype[votes$votetype %in% c("1-6")] <- "6-1"
-    votes$votetype[votes$votetype %in% c("2-5")] <- "5-2"
-    votes$votetype[votes$votetype %in% c("3-4")] <- "4-3"
-    votes$votetype[votes$votetype %in% c("2-4-1","1-4-2","1-2-4","4-1-2")] <- "4-2-1"
-    votes$votetype[votes$votetype %in% c("1-5-1","1-1-5")] <- "5-1-1"
-    votes$votetype[votes$votetype %in% c("2-1-3-1")] <- "3-2-1-1"
-    votes$votetype[votes$votetype %in% c("2-3-2")] <- "3-2-2"
-    votes$votetype[votes$votetype %in% c("1-3-3","3-1-3")] <- "3-3-1"
-  # 8 votes
-    votes$votetype[votes$votetype %in% c("1-2-4-1")] <- "4-2-1-1"  
-    votes$votetype[votes$votetype %in% c("1-2-5","1-5-2","2-1-5","2-5-1")] <- "5-2-1"  
-    votes$votetype[votes$votetype %in% c("1-3-4","1-4-3","3-4-1","3-1-4","4-1-3")] <- "4-3-1"  
-    votes$votetype[votes$votetype %in% c("1-5-1-1","1-1-5-1","1-1-1-5")] <- "5-1-1-1"  
-    votes$votetype[votes$votetype %in% c("1-7")] <- "7-1"  
-    votes$votetype[votes$votetype %in% c("2-3-3","3-2-3")] <- "3-3-2"  
-    votes$votetype[votes$votetype %in% c("2-4-2","2-2-4")] <- "4-2-2"  
-    votes$votetype[votes$votetype %in% c("2-6")] <- "6-2"  
-    votes$votetype[votes$votetype %in% c("3-5")] <- "5-3"  
-    votes$votetype[votes$votetype %in% c("4-1-2-1","4-1-1-2","2-1-1-4","2-1-4-1","2-4-1-1")] <- "4-2-1-1"  
-    votes$votetype[votes$votetype %in% c("5-1-2","1-2-5","1-5-2","2-1-5","2-5-1")] <- "5-2-1"  
-    votes$votetype[votes$votetype %in% c("1-1-6","1-6-1")] <- "6-1-1"  
-  # 9 votes
-    votes$votetype[votes$votetype %in% c("1-3-5","1-5-3","3-5-1","3-1-5","5-1-3")] <- "5-3-1" 
-    votes$votetype[votes$votetype %in% c("1-5-1-2","1-1-5-2","1-1-2-5","2-1-1-5","2-1-5-1","2-5-1-1","5-1-2-1","5-1-1-2")] <- "5-2-1-1"  
-    votes$votetype[votes$votetype %in% c("1-1-7","1-7-1")] <- "7-1-1"  
-    votes$votetype[votes$votetype %in% c("2-4-3","2-3-4","3-2-4","3-4-2","4-2-3")] <- "4-3-2" 
-    votes$votetype[votes$votetype %in% c("2-6-1","2-1-6","6-1-2","1-2-6","1-6-2")] <- "6-2-1" 
-    votes$votetype[votes$votetype %in% c("2-7")] <- "7-2" 
-    votes$votetype[votes$votetype %in% c("3-6")] <- "6-3" 
-    votes$votetype[votes$votetype %in% c("1-4-1-3","1-1-4-3","1-1-3-4","3-1-1-4","3-1-4-1","3-4-1-1","4-1-3-1","4-1-1-3")] <- "4-3-1-1" 
-    votes$votetype[votes$votetype %in% c("4-5")] <- "5-4"
-    votes$votetype[votes$votetype %in% c("2-5-2","2-2-5")] <- "5-2-2" 
-  #10 votes
-    votes$votetype[votes$votetype %in% c("1-1-1-1-1-4-1")] <- "4-1-1-1-1-1-1" 
-    votes$votetype[votes$votetype %in% c("5-1-3-1")] <- "5-3-1-1" 
-    votes$votetype[votes$votetype %in% c("7-1-2")] <- "7-2-1" 
-    votes$votetype[votes$votetype %in% c("5-2-3")] <- "5-3-2"
-    votes$votetype[votes$votetype %in% c("4-5-1")] <- "5-4-1" 
-    votes$votetype[votes$votetype %in% c("4-2-4")] <- "4-4-2"
-    votes$votetype[votes$votetype %in% c("3-5-2","2-3-5")] <- "5-3-2"
-    votes$votetype[votes$votetype %in% c("1-6-3")] <- "6-3-1"
-    votes$votetype[votes$votetype %in% c("4-6")] <- "6-4"
-    votes$votetype[votes$votetype %in% c("3-7")] <- "7-3"
-    votes$votetype[votes$votetype %in% c("2-8")] <- "8-2"
-    votes$votetype[votes$votetype %in% c("1-9")] <- "9-1" 
-  # 11 votes
-    votes$votetype[votes$votetype %in% c("4-7")] <- "7-4" 
-    votes$votetype[votes$votetype %in% c("5-6")] <- "6-5" 
-    votes$votetype[votes$votetype %in% c("1-8-2")] <- "8-2-1" 
-    votes$votetype[votes$votetype %in% c("1-9-1")] <- "9-1-1" 
-    votes$votetype[votes$votetype %in% c("2-7-2")] <- "7-2-2" 
-    votes$votetype[votes$votetype %in% c("6-2-3")] <- "6-3-2"
-    votes$votetype[votes$votetype %in% c("2-6-2-1","2-2-1-6","2-2-6-1")] <- "6-2-2-1" 
-  # 12 votes
-    votes$votetype[votes$votetype %in% c("2-10")] <- "10-2" 
-    votes$votetype[votes$votetype %in% c("3-9")] <- "9-3"
-    votes$votetype[votes$votetype %in% c("3-4-5","3-5-4","4-3-5","4-5-3","5-3-4")] <- "5-4-3" 
-    votes$votetype[votes$votetype %in% c("1-1-4-6","1-4-1-6","1-4-6-1","4-1-1-6","4-1-6-1","4-6-1-1","6-1-4-1","6-1-1-4")] <- "6-4-1-1" 
-    votes$votetype[votes$votetype %in% c("5-6-1","5-1-6","1-5-6","1-6-5","6-1-5")] <- "6-5-1"
-    votes$votetype[votes$votetype %in% c("2-3-7","2-7-3","3-2-7","3-7-2","7-2-3")] <- "7-3-2" 
-    votes$votetype[votes$votetype %in% c("1-4-7","1-7-4","4-1-7","4-7-1","7-1-4")] <- "7-4-1" 
-    votes$votetype[votes$votetype %in% c("2-8-2","2-2-8")] <- "8-2-2" 
-  # 13 votes
-    votes$votetype[votes$votetype %in% c("1-12")] <- "12-1" 
-    votes$votetype[votes$votetype %in% c("5-8")] <- "8-5" 
-    votes$votetype[votes$votetype %in% c("4-9")] <- "9-4" 
-    votes$votetype[votes$votetype %in% c("2-4-7","2-7-4","4-2-7","4-7-2","7-2-4")] <- "7-4-2"
-    votes$votetype[votes$votetype %in% c("1-2-4-6","1-2-6-4","1-4-2-6","1-4-6-2","1-6-4-2","1-6-2-4","2-1-4-6","2-4-1-6","2-4-6-1","2-1-6-4","2-6-1-4","2-6-4-1","4-6-2-1","4-6-1-2","4-1-2-6","4-1-6-2","4-2-6-1","4-2-1-6","6-4-1-2","6-2-1-4","6-2-4-1","6-1-2-4","6-1-4-2")] <- "6-4-2-1"
-    votes$votetype[votes$votetype %in% c("2-2-3-6","2-2-6-3","3-2-2-6","3-2-6-2","3-6-2-2","6-2-3-2","6-2-2-3")] <- "6-3-2-2"
-  #16 votes
-    votes$votetype[votes$votetype %in% c("5-3-5-3")] <- "5-5-3-3" 
-    
-    
-    
-    
-    
 
 votehxdetailed <- full_join(votehx,votes)    
 write.csv(votehxdetailed,paste(savedir,"Vote_history_types_of_vote_splits.csv",sep=""))

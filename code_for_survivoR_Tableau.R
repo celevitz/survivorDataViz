@@ -20,27 +20,15 @@ castaways <- survivoR::castaways
   ## For now, have the season 42 folks have "still in the game" as their "result"
   castaways$result[castaways$version_season == "US42" & is.na(castaways$result)] <- "Still in game"
   castaways$day[castaways$version_season == "US42" & is.na(castaways$day)] <- 26
+  castaways$merged_tribe[castaways$version_season == "US42" & (is.na(castaways$order) | castaways$order >= 7)] <- "Kula Kula"
   
 castawaydetails <- survivoR::castaway_details
 challenges <- survivoR::challenge_results
 challengesdesc <- survivoR::challenge_description
 vote_history <- survivoR::vote_history
 confessionals <- survivoR::confessionals
-  confessionals$version <- "US"
-  confessionals$version_season <- paste("US",as.character(confessionals$season),sep="")
-  for (sn in 1:9) { confessionals$version_season[confessionals$season == sn] <- paste("US0",as.character(confessionals$season[confessionals$season == sn]),sep="") }
-
 season_summary <- survivoR::season_summary
-  season_summary$version <- "US"
-  season_summary$version_season <- paste("US",as.character(season_summary$season),sep="")
-  for (sn in 1:9) { season_summary$version_season[season_summary$season == sn] <- paste("US0",as.character(season_summary$season[season_summary$season == sn]),sep="") }
-  
-  # manually add in data for S42 until it's updated in dev
-  season_summary$premiered[season_summary$version_season == "US42"] <- "2022-03-09" 
-  season_summary$timeslot[season_summary$version_season == "US42"] <- "Wednesday 8:00 pm"
-  season_summary$filming_started[season_summary$version_season == "US42"] <- "2021-05-16"
-  season_summary$filming_ended[season_summary$version_season == "US42"] <- "2021-06-10"
-  
+
 hidden_idols <- survivoR::hidden_idols
   hidden_idols$version <- "US"
   hidden_idols$version_season <- paste("US",as.character(hidden_idols$season),sep="")
@@ -53,9 +41,6 @@ jury_votes <- survivoR::jury_votes
 
 tribe_mapping <- survivoR::tribe_mapping
 viewers <- survivoR::viewers
-  viewers$version <- "US"
-  viewers$version_season <- paste("US",as.character(viewers$season),sep="")
-  for (sn in 1:9) { viewers$version_season[viewers$season == sn] <- paste("US0",as.character(viewers$season[viewers$season == sn]),sep="") }
 
 #############################################################################################################################
 #############################################################################################################################

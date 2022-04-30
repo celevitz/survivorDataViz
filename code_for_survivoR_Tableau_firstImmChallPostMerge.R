@@ -27,8 +27,9 @@ castawaydetails <- read.csv(paste(savedir,"survivoR_01_castawayDetails_cleaned.c
     ## Keep just the individual challenges that were for immunity
     firstii <- challenges[challenges$outcome_type == "Individual" & challenges$challenge_type %in% c("Immunity","Reward and Immunity") & challenges$tribe == "(Individual challenge)",]
     
-    # Season 41 is a little weird, just manually put that the merge was day 13
+    # Season 41 and 42 are a little weird (yay Mergatory!), just manually put that the merge was day 13 for 41 and 12 for 42
     firstii$day[firstii$season == 41 & firstii$day == 14 & firstii$version == "US"] <- 13
+    firstii$day[firstii$season == 42 & firstii$day == 14 & firstii$version == "US"] <- 12
     #season 14, too
     firstii$day[firstii$season == 14 & firstii$day == 27 & firstii$version == "US"] <- 24
     
@@ -40,6 +41,7 @@ castawaydetails <- read.csv(paste(savedir,"survivoR_01_castawayDetails_cleaned.c
     
     ## revert the challenge days that I manually edited
     firstii$dayofchallenge[firstii$season == 41 & firstii$dayofchallenge == 13 & firstii$version == "US"] <- 14
+    firstii$dayofchallenge[firstii$season == 42 & firstii$dayofchallenge == 12 & firstii$version == "US"] <- 14
     firstii$dayofchallenge[firstii$season == 14 & firstii$dayofchallenge == 24 & firstii$version == "US"] <- 27    
     
     ## bring on additional information 

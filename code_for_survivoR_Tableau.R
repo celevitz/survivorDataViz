@@ -16,6 +16,9 @@ library(devtools,lib="C:/Program Files/R/R-4.1.1/library"); library(ggplot2,lib=
 devtools::install_github("doehm/survivoR")
 savedir <- "H:/R/survivoR/02_cleaned_data/"
 
+advdetail <- survivoR::advantage_details
+advmvmt <- survivoR::advantage_movement
+
 castaways <- survivoR::castaways
   ## For now, have the season 42 folks have "still in the game" as their "result"
   castaways$result[castaways$version_season == "US42" & is.na(castaways$result)] <- "Still in game"
@@ -216,6 +219,38 @@ castawaydetails$race[is.na(castawaydetails$race) | castawaydetails$race == ""] <
     hidden_idols$castaway[hidden_idols$castaway_id == "US0300"] <- "Russell H."
     hidden_idols$castaway[hidden_idols$castaway_id == "US0314"] <- "Purple Kelly"   
     
+    advmvmt$castaway[advmvmt$castaway_id == "US0009"] <- "Jenna L."
+    advmvmt$castaway[advmvmt$castaway_id == "US0013"] <- "Sue"
+    advmvmt$castaway[advmvmt$castaway_id == "US0045"] <- "Big Tom"
+    advmvmt$castaway[advmvmt$castaway_id == "US0059"] <- "The General"
+    advmvmt$castaway[advmvmt$castaway_id == "US0094"] <- "Rob C."
+    advmvmt$castaway[advmvmt$castaway_id == "US0096"] <- "Jenna M."
+    advmvmt$castaway[advmvmt$castaway_id == "US0111"] <- "Jonny Fairplay"
+    advmvmt$castaway[advmvmt$castaway_id == "US0118"] <- "Bubba"
+    advmvmt$castaway[advmvmt$castaway_id == "US0122"] <- "Sarge"
+    advmvmt$castaway[advmvmt$castaway_id == "US0190"] <- "Flicka"
+    advmvmt$castaway[advmvmt$castaway_id == "US0206"] <- "Papa Smurf"
+    advmvmt$castaway[advmvmt$castaway_id == "US0288"] <- "Russell S."
+    advmvmt$castaway[advmvmt$castaway_id == "US0292"] <- "Laura M."
+    advmvmt$castaway[advmvmt$castaway_id == "US0300"] <- "Russell H."
+    advmvmt$castaway[advmvmt$castaway_id == "US0314"] <- "Purple Kelly"       
+    
+    advmvmt$played_for[advmvmt$played_for_id == "US0009"] <- "Jenna L."
+    advmvmt$played_for[advmvmt$played_for_id == "US0013"] <- "Sue"
+    advmvmt$played_for[advmvmt$played_for_id == "US0045"] <- "Big Tom"
+    advmvmt$played_for[advmvmt$played_for_id == "US0059"] <- "The General"
+    advmvmt$played_for[advmvmt$played_for_id == "US0094"] <- "Rob C."
+    advmvmt$played_for[advmvmt$played_for_id == "US0096"] <- "Jenna M."
+    advmvmt$played_for[advmvmt$played_for_id == "US0111"] <- "Jonny Fairplay"
+    advmvmt$played_for[advmvmt$played_for_id == "US0118"] <- "Bubba"
+    advmvmt$played_for[advmvmt$played_for_id == "US0122"] <- "Sarge"
+    advmvmt$played_for[advmvmt$played_for_id == "US0190"] <- "Flicka"
+    advmvmt$played_for[advmvmt$played_for_id == "US0206"] <- "Papa Smurf"
+    advmvmt$played_for[advmvmt$played_for_id == "US0288"] <- "Russell S."
+    advmvmt$played_for[advmvmt$played_for_id == "US0292"] <- "Laura M."
+    advmvmt$played_for[advmvmt$played_for_id == "US0300"] <- "Russell H."
+    advmvmt$played_for[advmvmt$played_for_id == "US0314"] <- "Purple Kelly"       
+    
     ## jury votes
     jury_votes$castaway[jury_votes$castaway_id == "US0009"] <- "Jenna L."
     jury_votes$castaway[jury_votes$castaway_id == "US0013"] <- "Sue"
@@ -341,6 +376,10 @@ castawaydetails$race[is.na(castawaydetails$race) | castawaydetails$race == ""] <
     
   # Hidden idols
     hidden_idols2 <- left_join(hidden_idols,fullnames,by=c("castaway_id", "castaway"))
+    advmvmt2 <- left_join(advmvmt,fullnames,by=c("castaway_id", "castaway"))
+    playedfornames <- fullnames
+    names(playedfornames) <- c("full_name","played_for_id","played_for","played_gender","played_race","played_ethnicity","played_poc")
+    advmvmt2 <- left_join(advmvm2,playedfornames,by=c("played_for_id","played_for"))
     
   # confessionals
     confessionals2 <- left_join(confessionals,fullnames,by=c("castaway_id", "castaway"))
@@ -390,6 +429,7 @@ castawaydetails$race[is.na(castawaydetails$race) | castawaydetails$race == ""] <
   ## add to hidden idols data
       hidden_idols3 <- left_join(hidden_idols2,additionaldetails,
                              by=c("version_season","castaway_id"))
+      advmvmt3 <- left_join(advmvmt2,additionaldetails,by=c("version_season","castaway_id"))
   
   ## and then do the same for the confessional data    
       confessionals3 <- left_join(confessionals2, additionaldetails,by=c("version_season","castaway_id"))
@@ -435,6 +475,8 @@ write.csv(vote_history3,paste(savedir,"survivoR_04_votehx_cleaned.csv",sep=""),r
 write.csv(challenges2,paste(savedir,"survivoR_05_challenges_cleaned.csv",sep=""),row.names=F)
 write.csv(confessionals3,paste(savedir,"survivoR_06_confessionals_cleaned.csv",sep=""),row.names=F)
 write.csv(hidden_idols3,paste(savedir,"survivoR_07_idols_cleaned.csv",sep=""),row.names=F)
+write.csv(advmvmt3,paste(savedir,"survivoR_07a_advantagesMvmt_cleaned.csv",sep=""),row.names=F)
+write.csv(advdetail,paste(savedir,"survivoR_07b_advantagesDetail_cleaned.csv",sep=""),row.names=F)
 write.csv(jury_votes2,paste(savedir,"survivoR_08_juryvotes_cleaned.csv",sep=""),row.names=F)
 write.csv(viewers,paste(savedir,"survivoR_09_viewers_cleaned.csv",sep=""),row.names=F)
 write.csv(tribe_mapping2,paste(savedir,"survivoR_10_tribemap_cleaned.csv",sep=""),row.names=F)

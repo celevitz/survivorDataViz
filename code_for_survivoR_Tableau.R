@@ -12,7 +12,7 @@
 ## -- Removed the extra votes because they were added into the raw data.
 
 rm(list=ls()); .libPaths("C:/Program Files/R/R-4.1.1/library")
-library(devtools,lib="C:/Program Files/R/R-4.1.1/library"); library(ggplot2,lib="C:/Program Files/R/R-4.1.1/library") ; library(tidyverse,lib="C:/Program Files/R/R-4.1.1/library")
+library(devtools,lib="C:/Program Files/R/R-4.1.1/library"); library(tidyverse,lib="C:/Program Files/R/R-4.1.1/library")
 devtools::install_github("doehm/survivoR")
 savedir <- "H:/R/survivoR/02_cleaned_data/"
 
@@ -300,7 +300,7 @@ castawaydetails$race[is.na(castawaydetails$race) | castawaydetails$race == ""] <
     tribe_mapping$castaway[tribe_mapping$castaway_id == "US0288"] <- "Russell S."
     tribe_mapping$castaway[tribe_mapping$castaway_id == "US0292"] <- "Laura M."
     tribe_mapping$castaway[tribe_mapping$castaway_id == "US0300"] <- "Russell H."
-    tribe_mapping$castaway[tribe_mapping$castaway_id == "US0314"] <- "Purple Kelly"   
+    tribe_mapping$castaway[tribe_mapping$castaway_id == "US0314"] <- "Purple Kelly"
     
 ## Other data cleaning
     # Updating castaway full names to be the same across all their seasons
@@ -379,7 +379,7 @@ castawaydetails$race[is.na(castawaydetails$race) | castawaydetails$race == ""] <
     advmvmt2 <- left_join(advmvmt,fullnames,by=c("castaway_id", "castaway"))
     playedfornames <- fullnames
     names(playedfornames) <- c("full_name","played_for_id","played_for","played_gender","played_race","played_ethnicity","played_poc")
-    advmvmt2 <- left_join(advmvm2,playedfornames,by=c("played_for_id","played_for"))
+    advmvmt2 <- left_join(advmvmt2,playedfornames,by=c("played_for_id","played_for"))
     
   # confessionals
     confessionals2 <- left_join(confessionals,fullnames,by=c("castaway_id", "castaway"))
@@ -392,13 +392,14 @@ castawaydetails$race[is.na(castawaydetails$race) | castawaydetails$race == ""] <
       challenges$winners[[i]] <- left_join(challenges$winners[[i]],winnersnames,by=c("winner_id","winner"))
       
     } 
-    
+
 ## Add tribe name to vote history
     vote_history3 <- left_join(vote_history2,tribe_mapping2[,c("version","version_season","season_name","season","episode","day","tribe_status","castaway_id","castaway","tribe")],
                                by=c("version","version_season","season_name","season","episode","day","tribe_status","castaway_id","castaway"))
     
     # not all tribes are filled in; do that manually
       vote_history3$tribe[vote_history3$version_season == "US02" & vote_history3$day == 41] <- "Barramundi"
+      vote_history3$tribe[vote_history3$version_season == "US42" & vote_history3$tribe == "Merged"] <- "Kula Kula"
       
       vote_history3$tribe[vote_history3$version_season == "US10" & vote_history3$day %in% c(3,6,8,11,12,15,18,21) & vote_history3$castaway == "Bobby Jon"] <- "Ulong"
       

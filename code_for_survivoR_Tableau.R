@@ -777,7 +777,25 @@ mvmt <- read.csv(paste(savedir,"survivoR_07a_advantagesMvmt_cleaned.csv",sep="")
           select(version,version_season,season,castaway_id) %>%            
           mutate(count=1) %>%
           group_by(version,version_season,season,castaway_id) %>%
-          summarize(votescast=sum(count))
+          summarize(votescast=sum(count)) %>%
+          full_join(
+            ## number of votes excluding ties
+              votehx %>% 
+                filter(!(is.na(vote_id)) & tie == FALSE) %>%
+                select(version,version_season,season,castaway_id) %>%            
+                mutate(count=1) %>%
+                group_by(version,version_season,season,castaway_id) %>%
+                summarize(votescastNonTie=sum(count))
+            ) %>%
+          full_join(
+            ## number of votes that were part of someone being voted out
+            votehx %>% 
+              filter(!(is.na(vote_id)) & !(is.na(voted_out_id))) %>%
+              select(version,version_season,season,castaway_id) %>%            
+              mutate(count=1) %>%
+              group_by(version,version_season,season,castaway_id) %>%
+              summarize(votescastSomeoneOut=sum(count))
+          )   
         
         ## number of accurate votes cast per season  
         accuratevotescast <- votehx %>% 
@@ -786,7 +804,17 @@ mvmt <- read.csv(paste(savedir,"survivoR_07a_advantagesMvmt_cleaned.csv",sep="")
           filter(vote_id == voted_out_id) %>%
           mutate(count=1) %>%
           group_by(version,version_season,season,castaway_id) %>%
-          summarize(accuratevotescast=sum(count))      
+          summarize(accuratevotescastFullDenom=sum(count))  %>%
+          ## accurate votes out of the votes that were part of someone being voted out
+          full_join(
+            votehx %>% 
+              filter(!(is.na(vote_id)) & !(is.na(voted_out_id))) %>%
+              select(version,version_season,season,castaway_id,vote_id,voted_out_id) %>%    
+              filter(vote_id == voted_out_id) %>%
+              mutate(count=1) %>%
+              group_by(version,version_season,season,castaway_id) %>%
+              summarize(accuratevotescast=sum(count)) 
+          )
         
         # Bring tribal council superlatives together
           tribalcouncilindivsuper <- full_join(full_join(full_join(full_join(

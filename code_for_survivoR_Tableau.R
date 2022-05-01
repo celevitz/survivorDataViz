@@ -409,6 +409,34 @@ castawaydetails$race[is.na(castawaydetails$race) | castawaydetails$race == ""] <
   ## and then do the same for the confessional data    
       confessionals3 <- left_join(confessionals2, additionaldetails,by=c("version_season","castaway_id"))
       
+## Data for each day - how many of each race-gender were still in the game
+      DailyNsGender <- tribe_mapping2 %>%
+        group_by(version_season,day,gender) %>%
+        count() %>%
+        pivot_wider(names_from = gender, values_from = n, values_fill = 0) %>%
+        clean_names()
+      
+      DailyNsPOC <- tribe_mapping2 %>%
+        group_by(version_season,day,poc) %>%
+        count() %>%
+        pivot_wider(names_from = poc, values_from = n, values_fill = 0) %>%
+        clean_names()
+      
+      
+      DailyNsGenderPOC <- tribe_mapping2 %>%
+        group_by(version_season,day,poc,gender) %>%
+        count() %>%
+        pivot_wider(names_from = c(poc,gender), values_from = n, values_fill = 0) %>%
+        clean_names()
+      
+      DailyNs <- full_join(full_join(DailyNsGender,DailyNsPOC),DailyNsGenderPOC) %>%
+        rename(poc_n=poc)
+      
+      challenges <- left_join(challenges,DailyNs)
+      vote_history3 <- left_join(vote_history3,DailyNs)
+      tribe_mapping2 <- left_join(tribe_mapping2,DailyNs)
+      
+      
 ## make the the challenges tibbles able to be exported to CSV
     # create a holding dataset for the challenges data
       #create data frame with 0 rows and 17 columns

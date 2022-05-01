@@ -826,7 +826,8 @@ mvmt <- read.csv(paste(savedir,"survivoR_07a_advantagesMvmt_cleaned.csv",sep="")
                   votesnullifiedoneseason),votesnullified),
               votescast),accuratevotescast),totaltcs),receivedvotesatTCs),dayoffirstvotereceived) %>%
             group_by(version,version_season,season,castaway_id) %>%
-            mutate(percentaccuracy=accuratevotescast/votescast)
+            mutate(percentaccuracyIncludingTies=accuratevotescastFullDenom/votescast,
+                   percentaccuracy=accuratevotescast/votescastSomeoneOut)
     
     ## C. Idol information  
       ## IDOLS!!!!!!!!!!!!!

@@ -641,7 +641,8 @@ votehx <- read.csv(paste(savedir,"survivoR_04_votehx_cleaned.csv",sep=""),header
 challenges <- read.csv(paste(savedir,"survivoR_05_challenges_cleaned.csv",sep=""),header=T)
 confessionals <- read.csv(paste(savedir,"survivoR_06_confessionals_cleaned.csv",sep=""),header=T)
 tribemap <- read.csv(paste(savedir,"survivoR_10_tribemap_cleaned.csv",sep=""),header=T)
-
+mvmt <- read.csv(paste(savedir,"survivoR_07a_advantagesMvmt_cleaned.csv",sep=""),header=T)
+mvmt$advtype <- substr(mvmt$advantage_id,3,4)
 
 ## Superlatives for an individual
     ## A. Challenge superlatives for the individual
@@ -800,10 +801,55 @@ tribemap <- read.csv(paste(savedir,"survivoR_10_tribemap_cleaned.csv",sep=""),he
             mutate(percentaccuracy=accuratevotescast/votescast)
     
     ## C. Idol information  
-    ## number of idols played
-    ## number of idols found
-    ## Etc.
-    ## This section is not yet built out because Dan and I are modifying the hidden idol data.
+      ## IDOLS!!!!!!!!!!!!!
+      idols <- 
+        # Idols found in one season
+        mvmt %>% 
+        filter(event == "Found" & advtype == "HI") %>%
+        group_by(version,version_season,season,season_name,castaway,castaway_id) %>%
+        summarize(idolsfoundOneSeason = n()) %>%
+        # Idols found across all seasons
+        full_join(
+          mvmt %>% 
+            filter(event == "Found" & advtype == "HI") %>%
+            group_by(version,castaway,castaway_id) %>%
+            summarize(idolsfoundAllSeasons = n())
+        ) %>%
+        # Idols held at any time in one season
+        full_join(
+          mvmt %>% 
+            filter(advtype == "HI") %>%
+            group_by(version,version_season,season,season_name,castaway,castaway_id) %>%
+            select(version,version_season,season,season_name,castaway,castaway_id,advantage_id) %>% 
+            distinct() %>%
+            group_by(version,version_season,season,season_name,castaway,castaway_id) %>%
+            summarize(idolsheldOneSeason = n())
+        )     %>%
+        # Idols held at any time across all seasons
+        full_join(
+          mvmt %>% 
+            filter(advtype == "HI") %>%
+            select(version,castaway,castaway_id,advantage_id) %>% 
+            distinct() %>%
+            group_by(version,castaway,castaway_id) %>%
+            summarize(idolsheldAcrossSeasons = n())
+        ) %>%
+        # Idols played in one season
+        full_join(
+          mvmt %>% 
+            filter(event == "Played" & advtype == "HI") %>%
+            group_by(version,version_season,season,season_name,castaway,castaway_id) %>%
+            summarize(idolsPlayedOneSeason = n())        
+        ) %>%
+        # Idols played across seasons
+        full_join(
+          mvmt %>% 
+            filter(event == "Played" & advtype == "HI") %>%
+            group_by(version,castaway,castaway_id) %>%
+            summarize(idolsPlayedAcrossSeasons = n())        
+        )  
+      
+      
     
     ## D. Confessionals
         # Total confessionals in a season
@@ -875,7 +921,8 @@ tribemap <- read.csv(paste(savedir,"survivoR_10_tribemap_cleaned.csv",sep=""),he
             timesplayed),daysplayed),
           indivconftotal),avgperepi),
           timesmadecasetojury),timesmademerge),timessatonjury) %>%
-          filter(!(is.na(season)))
+          filter(!(is.na(season))) %>%
+          full_join(mvmt)
     
     # Have things be 0 instead of NA
         for (var in 5:dim(individualsuperlatives)[2]) {

@@ -35,10 +35,6 @@ hidden_idols <- survivoR::hidden_idols
   for (sn in 1:9) { hidden_idols$version_season[hidden_idols$season == sn] <- paste("US0",as.character(hidden_idols$season[hidden_idols$season == sn]),sep="") }
 
 jury_votes <- survivoR::jury_votes
-  jury_votes$version <- "US"
-  jury_votes$version_season <- paste("US",as.character(jury_votes$season),sep="")
-  for (sn in 1:9) { jury_votes$version_season[jury_votes$season == sn] <- paste("US0",as.character(jury_votes$season[jury_votes$season == sn]),sep="") }
-
 tribe_mapping <- survivoR::tribe_mapping
 viewers <- survivoR::viewers
 

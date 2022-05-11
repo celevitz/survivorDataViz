@@ -364,25 +364,12 @@ castawaydetails$race[is.na(castawaydetails$race) | castawaydetails$race == ""] <
     } 
 
 ## Add tribe name to vote history
-    vote_history3 <- left_join(vote_history2,tribe_mapping2[,c("version","version_season","season_name","season","episode","day","tribe_status","castaway_id","castaway","tribe")],
-                               by=c("version","version_season","season_name","season","episode","day","tribe_status","castaway_id","castaway"))
+    vote_history3 <- vote_history2
     
     # not all tribes are filled in; do that manually
       vote_history3$tribe[vote_history3$version_season == "US02" & vote_history3$day == 41] <- "Barramundi"
       vote_history3$tribe[vote_history3$version_season == "US42" & vote_history3$tribe == "Merged"] <- "Kula Kula"
-      
-      vote_history3$tribe[vote_history3$version_season == "US10" & vote_history3$day %in% c(3,6,8,11,12,15,18,21) & vote_history3$castaway == "Bobby Jon"] <- "Ulong"
-      
-      vote_history3$tribe[vote_history3$version_season == "US11" & vote_history3$day == 3 & vote_history3$castaway == "Bobb==y Jon"] <- "Nakúm"
-      vote_history3$tribe[vote_history3$version_season == "US11" & vote_history3$day == 14 & vote_history3$castaway == "Bobby Jon"] <- "Yaxhá"
-      vote_history3$tribe[vote_history3$version_season == "US11" & vote_history3$day == 15 & vote_history3$castaway == "Bobby Jon"] <- "Yaxhá"
-      vote_history3$tribe[vote_history3$version_season == "US11" & vote_history3$day == 18 & vote_history3$castaway == "Bobby Jon"] <- "Yaxhá"
-      vote_history3$tribe[vote_history3$version_season == "US11" & vote_history3$day == 21 & vote_history3$castaway == "Bobby Jon"] <- "Xhakúm"
-      vote_history3$tribe[vote_history3$version_season == "US11" & vote_history3$day == 24 & vote_history3$castaway == "Bobby Jon"] <- "Xhakúm"
-      
-      #vote_history3[vote_history3$season == 38 & vote_history3$day == 16,] %>% View()
-    
-      
+
 ## Add additional information to datasets, to be able to say more things about people
   # set up the data
       additionaldetails <- as.data.frame(castaways[,c("castaway_id","version_season","age","day","order","result","jury_status")])

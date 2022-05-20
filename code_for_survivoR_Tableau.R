@@ -9,7 +9,7 @@
 ##    Section 3: Calculate different types of superlatives for each castaway. Superlatives can be within a season (e.g., most votes received in one season) or across seasons (e.g., most individual immunity wins across seasons played)
 
 rm(list=ls()); .libPaths("C:/Program Files/R/R-4.1.1/library")
-library(devtools,lib="C:/Program Files/R/R-4.1.1/library"); library(tidyverse,lib="C:/Program Files/R/R-4.1.1/library")
+library(devtools,lib="C:/Program Files/R/R-4.1.1/library"); library(tidyverse,lib="C:/Program Files/R/R-4.1.1/library"); library(janitor,lib="C:/Program Files/R/R-4.1.1/library")
 devtools::install_github("doehm/survivoR")
 savedir <- "H:/R/survivoR/02_cleaned_data/"
 
@@ -425,14 +425,14 @@ castawaydetails$race[is.na(castawaydetails$race) | castawaydetails$race == ""] <
 ## make the the challenges tibbles able to be exported to CSV
     # create a holding dataset for the challenges data
       #create data frame with 0 rows and 17 columns
-       challenges2 <- data.frame(matrix(ncol = 33, nrow = 0))
+       challenges2 <- data.frame(matrix(ncol = length(c(names(challenges)[names(challenges) != "winners"],names(challenges$winners[[1]]))), nrow = 0))
        
       #provide column names
-        colnames(challenges2) <- c(names(challenges)[c(1:11,13:25)],names(challenges$winners[[1]]))
+        colnames(challenges2) <- c(names(challenges)[names(challenges) != "winners"],names(challenges$winners[[1]]))
     
     # for each of the season-episode-day-challenge types, duplicate that information for each of the winners
         for (i in 1:dim(challenges)[1]) {
-          temp <- cbind(as.data.frame(challenges[i,c(1:11,13:25)]),as.data.frame(challenges$winners[[i]]))
+          temp <- cbind(as.data.frame(challenges[i,c(names(challenges)[names(challenges) != "winners"])]),as.data.frame(challenges$winners[[i]]))
           
           challenges2 <- rbind(challenges2,temp)
           #print(challenges2)

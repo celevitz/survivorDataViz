@@ -23,6 +23,7 @@ votescast <- votehx %>% select(version,version_season,day,order,vote_order,casta
 ## number of people at the tribal council
   numberofvoters <- votehx %>% select(version,version_season,day,order,vote_order,castaway_id) %>%
     group_by(version,version_season,day,order,vote_order) %>%
+    distinct() %>%
     mutate(numbervoters=n()) %>%
     select(version,version_season,day,order,vote_order,numbervoters) %>%
     distinct()
@@ -68,9 +69,12 @@ numbervotesreceivedbyperson <- numbervotesreceivedbyperson %>%
 
 ##############################
 ## Bring all together
-votes <-full_join(full_join( full_join(votescast,numberreceiving),
+votes <-left_join(full_join( full_join(votescast,numberreceiving),
              numbervotesreceivedbyperson),numberofvoters)
 
-votehxdetailed <- full_join(votehx,votes)    
+votehxdetailed <- full_join(votehx %>% 
+                              select(version,version_season,season,season_name,day,order,vote_order,castaway,vote,tie,nullified,voted_out,castaway_id,vote_id,voted_out_id,full_name,vote_full_name,voted_out_full_name),
+                            votes)    
+
 write.csv(votehxdetailed,paste(savedir,"Vote_history_types_of_vote_splits.csv",sep=""))
 

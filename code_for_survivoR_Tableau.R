@@ -15,27 +15,16 @@ savedir <- "H:/R/survivoR/02_cleaned_data/"
 
 advdetail <- survivoR::advantage_details
 advmvmt <- survivoR::advantage_movement
-
 castaways <- survivoR::castaways
-  ## For now, have the season 42 folks have "still in the game" as their "result"
-  castaways$result[castaways$version_season == "US42" & is.na(castaways$result)] <- "Still in game"
-  castaways$day[castaways$version_season == "US42" & is.na(castaways$day)] <- 26
-  castaways$merged_tribe[castaways$version_season == "US42" & (is.na(castaways$order) | castaways$order >= 7)] <- "Kula Kula"
-  
 castawaydetails <- survivoR::castaway_details
 challenges <- survivoR::challenge_results
 challengesdesc <- survivoR::challenge_description
 vote_history <- survivoR::vote_history
 confessionals <- survivoR::confessionals
 season_summary <- survivoR::season_summary
-
-hidden_idols <- survivoR::hidden_idols
-  hidden_idols$version <- "US"
-  hidden_idols$version_season <- paste("US",as.character(hidden_idols$season),sep="")
-  for (sn in 1:9) { hidden_idols$version_season[hidden_idols$season == sn] <- paste("US0",as.character(hidden_idols$season[hidden_idols$season == sn]),sep="") }
-
 jury_votes <- survivoR::jury_votes
 tribe_mapping <- survivoR::tribe_mapping
+bootmapping <- survivoR::boot_mapping
 viewers <- survivoR::viewers
 
 #############################################################################################################################
@@ -47,30 +36,19 @@ viewers <- survivoR::viewers
   # clean the result data
     castaways$result[castaways$result %in% c("2nd Runner-up","2nd runner-up")] <- "2nd runner-up"
 
-## My data source (survivor wiki fandom) only have pages for Asian, Latin American, and Black. 
-## I found a reddit page that had Jewish players. 
-## On Natalie Bolton's page, it mentioned that she was Native American, and the page called out 3 or 4 other Native American players.
-castawaydetails$race[is.na(castawaydetails$race) | castawaydetails$race == ""] <- "Unknown"
-
-  # edit to gender, race, and ethnicity data
-  # Peih-Gee in Season 31 is missing ethnicity data
-    castawaydetails$ethnicity[castawaydetails$short_name == "Peih-Gee" & is.na(castawaydetails$ethnicity)] <- "Hong Konger American"
+  ## My data source (survivor wiki fandom) only have pages for Asian, Latin American, and Black. 
+  ## I found a reddit page that had Jewish players. 
+  ## On Natalie Bolton's page, it mentioned that she was Native American, and the page called out 3 or 4 other Native American players.
+  castawaydetails$race[is.na(castawaydetails$race) | castawaydetails$race == ""] <- "Unknown"
   
-  # Want to distinguish between Black players and other players of color
-    castawaydetails$poc[grep("Black",castawaydetails$race)] <- "Black"
+    # edit to gender, race, and ethnicity data
+    # Peih-Gee in Season 31 is missing ethnicity data
+      castawaydetails$ethnicity[castawaydetails$short_name == "Peih-Gee" & is.na(castawaydetails$ethnicity)] <- "Hong Konger American"
     
-  # visually check that all of the people who show up more than once have the same data for 
-      #tempcast <- castaways[,c(1:9)]
-      #tempcast$countofrows <- NA
-      
-      #for (cc in 1:max(tempcast$castaway_id)) {
-      #  tempcast$countofrows[tempcast$castaway_id == cc] <- nrow(tempcast[tempcast$castaway_id == cc,])
-        
-      #}
-      #tempcast <- tempcast[tempcast$countofrows > 1,]
-      #tempcast <- tempcast[order(tempcast$castaway_id),]
-      #tempcast  %>% View()
+    # Want to distinguish between Black players and other players of color
+      castawaydetails$poc[grep("Black",castawaydetails$race)] <- "Black"
   
+    
   # For my own purposes, I want some people to consistently be known with their nickname or their name with their last initial.
   # I tend to use the short name more than the long name.  
     ## Have Castaway & Full Name consistent across Castaway ID
@@ -195,23 +173,24 @@ castawaydetails$race[is.na(castawaydetails$race) | castawaydetails$race == ""] <
     confessionals$castaway[confessionals$castaway_id == "US0300"] <- "Russell H."
     confessionals$castaway[confessionals$castaway_id == "US0314"] <- "Purple Kelly"   
     
-    ## hidden idols
-    hidden_idols$castaway[hidden_idols$castaway_id == "US0009"] <- "Jenna L."
-    hidden_idols$castaway[hidden_idols$castaway_id == "US0013"] <- "Sue"
-    hidden_idols$castaway[hidden_idols$castaway_id == "US0045"] <- "Big Tom"
-    hidden_idols$castaway[hidden_idols$castaway_id == "US0059"] <- "The General"
-    hidden_idols$castaway[hidden_idols$castaway_id == "US0094"] <- "Rob C."
-    hidden_idols$castaway[hidden_idols$castaway_id == "US0096"] <- "Jenna M."
-    hidden_idols$castaway[hidden_idols$castaway_id == "US0111"] <- "Jonny Fairplay"
-    hidden_idols$castaway[hidden_idols$castaway_id == "US0118"] <- "Bubba"
-    hidden_idols$castaway[hidden_idols$castaway_id == "US0122"] <- "Sarge"
-    hidden_idols$castaway[hidden_idols$castaway_id == "US0190"] <- "Flicka"
-    hidden_idols$castaway[hidden_idols$castaway_id == "US0206"] <- "Papa Smurf"
-    hidden_idols$castaway[hidden_idols$castaway_id == "US0288"] <- "Russell S."
-    hidden_idols$castaway[hidden_idols$castaway_id == "US0292"] <- "Laura M."
-    hidden_idols$castaway[hidden_idols$castaway_id == "US0300"] <- "Russell H."
-    hidden_idols$castaway[hidden_idols$castaway_id == "US0314"] <- "Purple Kelly"   
+    ## boot mapping
+    bootmapping$castaway[bootmapping$castaway_id == "US0009"] <- "Jenna L."
+    bootmapping$castaway[bootmapping$castaway_id == "US0013"] <- "Sue"
+    bootmapping$castaway[bootmapping$castaway_id == "US0045"] <- "Big Tom"
+    bootmapping$castaway[bootmapping$castaway_id == "US0059"] <- "The General"
+    bootmapping$castaway[bootmapping$castaway_id == "US0094"] <- "Rob C."
+    bootmapping$castaway[bootmapping$castaway_id == "US0096"] <- "Jenna M."
+    bootmapping$castaway[bootmapping$castaway_id == "US0111"] <- "Jonny Fairplay"
+    bootmapping$castaway[bootmapping$castaway_id == "US0118"] <- "Bubba"
+    bootmapping$castaway[bootmapping$castaway_id == "US0122"] <- "Sarge"
+    bootmapping$castaway[bootmapping$castaway_id == "US0190"] <- "Flicka"
+    bootmapping$castaway[bootmapping$castaway_id == "US0206"] <- "Papa Smurf"
+    bootmapping$castaway[bootmapping$castaway_id == "US0288"] <- "Russell S."
+    bootmapping$castaway[bootmapping$castaway_id == "US0292"] <- "Laura M."
+    bootmapping$castaway[bootmapping$castaway_id == "US0300"] <- "Russell H."
+    bootmapping$castaway[bootmapping$castaway_id == "US0314"] <- "Purple Kelly"   
     
+    # Idols and advantages
     advmvmt$castaway[advmvmt$castaway_id == "US0009"] <- "Jenna L."
     advmvmt$castaway[advmvmt$castaway_id == "US0013"] <- "Sue"
     advmvmt$castaway[advmvmt$castaway_id == "US0045"] <- "Big Tom"
@@ -313,85 +292,98 @@ castawaydetails$race[is.na(castawaydetails$race) | castawaydetails$race == ""] <
       season_summary$tribe_setup[season_summary$version_season == "US31"] <- "Also called 'Second Chances.' Two tribes of ten returning players who only played once before, have not won, and were selected by public vote"
       season_summary$tribe_setup[season_summary$version_season == "US41"] <- "Three tribes of six new players. 'Drop the 4 and keep the 1; it's a whole new Survivor'"
 
-    # Votes cast against Kelley Wentworth on Day 36 of Season 31 should be nullified
-    # Day 36 of Season 31 looks messy and weird.
-      vote_history$nullified[vote_history$version_season == "US31" & vote_history$day == 36 & vote_history$vote == "Kelley"] <- TRUE
-			
-## Add full name, gender, race, ethnicity to all tibbles
-  fullnames <- unique(castawaydetails[,c("full_name","castaway_id","short_name","gender","race","ethnicity","poc")])
-  names(fullnames) <- c("full_name","castaway_id","castaway","gender","race","ethnicity","poc")
-  fullnames <- fullnames[order(fullnames$castaway_id),]
-  #fullnames %>% View()
-  
-  # Vote history
-    votenames <- fullnames
-    names(votenames) <- c("vote_full_name","vote_id","vote","vote_gender","vote_race","vote_ethnicity","vote_poc")
-    
-    votedout <- fullnames
-    names(votedout) <- c("voted_out_full_name","voted_out_id","voted_out","voted_out_gender","voted_out_race","voted_out_ethnicity","voted_out_poc")
-  
-    vote_history2 <- left_join(vote_history,fullnames,by=c("castaway_id", "castaway"))
-    vote_history2 <- left_join(vote_history2,votenames,by=c("vote_id","vote"))
-    vote_history2 <- left_join(vote_history2,votedout,by=c("voted_out_id","voted_out"))
-    
-  # tribe mapping
-    tribe_mapping2 <- left_join(tribe_mapping,fullnames,by=c("castaway_id", "castaway"))
-    
-  # Jury Votes
-    jury_votes2 <- left_join(jury_votes,fullnames,by=c("castaway_id", "castaway"))
-    
-    finalistnames <- fullnames
-    names(finalistnames) <- c("finalist_full_name","finalist_id","finalist","finalist_gender","finalist_race","finalist_ethnicity","finalist_poc")
-    jury_votes2 <- left_join(jury_votes2,finalistnames,by=c("finalist_id","finalist"))
-    
-  # Hidden idols
-    hidden_idols2 <- left_join(hidden_idols,fullnames,by=c("castaway_id", "castaway"))
-    advmvmt2 <- left_join(advmvmt,fullnames,by=c("castaway_id", "castaway"))
-    playedfornames <- fullnames
-    names(playedfornames) <- c("full_name","played_for_id","played_for","played_gender","played_race","played_ethnicity","played_poc")
-    advmvmt2 <- left_join(advmvmt2,playedfornames,by=c("played_for_id","played_for"))
-    
-  # confessionals
-    confessionals2 <- left_join(confessionals,fullnames,by=c("castaway_id", "castaway"))
-    
-  # Challenges
-    winnersnames <- fullnames
-    names(winnersnames) <- c("winner_fullname","winner_id","winner","winner_gender","winner_race","winner_ethnicity","winner_poc")
-    
-    for (i in 1:length(challenges$winners)) {
-      challenges$winners[[i]] <- left_join(challenges$winners[[i]],winnersnames,by=c("winner_id","winner"))
-      
-    } 
-
-## Add tribe name to vote history
-    vote_history3 <- vote_history2
-    
     # not all tribes are filled in; do that manually
-      vote_history3$tribe[vote_history3$version_season == "US02" & vote_history3$day == 41] <- "Barramundi"
-      vote_history3$tribe[vote_history3$version_season == "US42" & vote_history3$tribe == "Merged"] <- "Kula Kula"
-
-## Add additional information to datasets, to be able to say more things about people
-  # set up the data
-      additionaldetails <- as.data.frame(castaways[,c("castaway_id","version_season","age","day","order","result","jury_status")])
-      additionaldetails$keep <- 0
-          # only keep the "best" result for each castaway (only relevant for those who were on extinction/redemption and then came back into the game)
-          for (ci in unique(additionaldetails$castaway_id)) {
-            for (s in c(unique(additionaldetails$version_season[additionaldetails$castaway_id == ci]))) {
-                maxday <- max(additionaldetails$day[additionaldetails$castaway_id == ci & additionaldetails$version_season == s],na.rm=T) 
-                additionaldetails$keep[additionaldetails$castaway_id == ci & additionaldetails$day == maxday & additionaldetails$version_season == s] <- 1
-            }
-          }
-      additionaldetails <- additionaldetails[additionaldetails$keep ==1,]    
-      additionaldetails$keep <- NULL
-  
-  ## add to hidden idols data
-      hidden_idols3 <- left_join(hidden_idols2,additionaldetails,
-                             by=c("version_season","castaway_id"))
-      advmvmt3 <- left_join(advmvmt2,additionaldetails,by=c("version_season","castaway_id"))
-  
-  ## and then do the same for the confessional data    
-      confessionals3 <- left_join(confessionals2, additionaldetails,by=c("version_season","castaway_id"))
+      vote_history$tribe[vote_history$version_season == "US02" & vote_history$day == 41] <- "Barramundi"
+      vote_history$tribe[vote_history$version_season == "US42" & vote_history$tribe == "Merged"] <- "Kula Kula"
       
+    # want all tribe names in the castaway data set  
+      castawaystribes <- tribe_mapping %>% 
+                          select(version_season,castaway_id,tribe,tribe_status,day) %>%
+                          filter(tribe != "Redemption Island" & tribe != "Edge of Extinction") %>%
+                          group_by(version_season,castaway_id,tribe_status) %>%
+                          filter(day==min(day)) %>%
+                          select(!day) %>%
+                          distinct() %>%
+                          pivot_wider(values_from=tribe,names_from = tribe_status)
+      
+      castawaystribes$Merged[castawaystribes$version_season == "US41" & !(is.na(castawaystribes$Merged))] <- "Via Kana"
+      castawaystribes$Merged[castawaystribes$version_season == "US42" & !(is.na(castawaystribes$Merged))] <- "Kula Kula"
+      
+      castaways <- left_join(castaways,castawaystribes %>% select(!Original))
+      
+    # add number of players in game and stage of game to the advantages dataset
+    #  advmvmt <- left_join(advmvmt,tribe_mapping %>% select(version,version_season,day,castaway_id) %>%
+    #                  distinct() %>% group_by(version,version_season,day) %>% summarise(numberingame=n())  %>%
+    #                left_join(
+    #                  vote_history %>% select(version,version_season,day,tribe_status) %>% distinct()
+    #                  ))
+      
+## Add Additional Information to all tables
+  fullnames <- castawaydetails %>% select(full_name,castaway_id,short_name,gender,race,ethnicity,poc) %>%
+                  distinct() %>%
+                  rename(castaway=short_name) %>%
+               full_join(  
+                  castaways %>% select(castaway_id,version_season,age,day,order,result,episode,jury_status) %>%
+                    group_by(version_season,castaway_id) %>%
+                    mutate(maxday=max(day)) %>%
+                    filter(day==maxday) %>% select(!maxday)
+               )
+  
+  
+  advmvmt2 <- left_join(advmvmt,fullnames %>% rename(daylasteduntil=day,episodelastedthrough=episode),
+                        by=c("version_season","castaway","castaway_id")) %>%
+              left_join(fullnames %>% select(version_season,full_name,castaway,castaway_id,gender,poc,order,result,jury_status) %>%
+                          rename(played_for=castaway,played_for_id=castaway_id,played_for_full_name=full_name,played_for_gender=gender,played_for_poc=poc,played_for_order=order,played_for_result=result,played_for_jury_status=jury_status))
+  
+  bootmapping2 <- left_join(bootmapping,fullnames %>% rename(daylasteduntil=day,episodelastedthrough=episode,ordervotedoff=order),
+                            by=c("version_season","castaway","castaway_id")) 
+  
+  confessionals2 <- left_join(confessionals,fullnames %>% rename(daylasteduntil=day,episodelastedthrough=episode),
+                              by=c("version_season","castaway","castaway_id"))
+  
+  jury_votes2 <- left_join(jury_votes,fullnames %>% rename(daylasteduntil=day,episodelastedthrough=episode),
+                              by=c("version_season","castaway","castaway_id")) %>%
+                      left_join(fullnames %>% 
+                                  select(version_season,castaway_id,castaway,full_name,gender,poc,age,order,result,episode) %>%
+                                  rename(finalist_id=castaway_id,finalist=castaway,finalist_full_name = full_name,finalist_gender=gender,finalist_poc=poc,finalist_age=age,finalist_order=order,finalist_result=result,finalist_episode =episode))
+                    
+  tribe_mapping2 <- left_join(tribe_mapping,fullnames %>% rename(daylasteduntil=day,episodelastedthrough=episode),
+                            by=c("version_season","castaway","castaway_id")) 
+  
+  vote_history2 <- left_join(vote_history,
+                             fullnames %>% 
+                               rename(episodelasteduntil=episode,daylasteduntil=day,ordervotedoff=order)) %>%
+                  left_join(fullnames %>%
+                              rename_with(~paste(.x,"vote",sep="")) %>%
+                              rename(vote_id=castaway_idvote,vote=castawayvote,version_season=version_seasonvote)) %>%
+                  left_join(fullnames %>%
+                              rename_with(~paste(.x,"voted_out",sep="")) %>%
+                              rename(voted_out_id=castaway_idvoted_out,voted_out=castawayvoted_out,version_season=version_seasonvoted_out)) 
+  
+  ## Challenges is a bit more complex -- need to restructure data so that there are no "tibbles" within the tibble
+      # create a holding dataset for the challenges data
+      challenges2 <- data.frame(matrix(ncol = length(c(names(challenges)[names(challenges) != "winners"],names(challenges$winners[[1]]))), nrow = 0))
+      
+      #provide column names
+      colnames(challenges2) <- c(names(challenges)[names(challenges) != "winners"],names(challenges$winners[[1]]))
+      
+      # for each of the season-episode-day-challenge types, duplicate that information for each of the winners
+      for (i in 1:dim(challenges)[1]) {
+        temp <- cbind(as.data.frame(challenges[i,c(names(challenges)[names(challenges) != "winners"])]),as.data.frame(challenges$winners[[i]]))
+        
+        challenges2 <- rbind(challenges2,temp)
+        #print(challenges2)
+      }
+      
+      challenges2 <- left_join(challenges2 %>% rename(castaway_id=winner_id,castaway=winner,tribe=winning_tribe),
+                               fullnames %>% 
+                                 rename(daylasteduntil=day,episodelastedthrough=episode,bootorder=order)) %>%
+                  # add on challenge description
+                  left_join(challengesdesc %>% rename(racecharacteristic=race))  
+      
+      # if the challenge was post-merge, add in "individual challenge" for the tribe name
+      challenges2$tribe[is.na(challenges2$tribe) & challenges2$outcome_type %in% c("Individual","Team")] <- "(Individual challenge)"
+
 ## Data for each day - how many of each race-gender were still in the game
       DailyNsGender <- tribe_mapping2 %>%
         select(version_season,day,gender,castaway_id) %>% distinct() %>%
@@ -417,57 +409,27 @@ castawaydetails$race[is.na(castawaydetails$race) | castawaydetails$race == ""] <
       DailyNs <- full_join(full_join(DailyNsGender,DailyNsPOC),DailyNsGenderPOC) %>%
         rename(poc_n=poc)
       
-      challenges <- left_join(challenges,DailyNs)
-      vote_history3 <- left_join(vote_history3,DailyNs)
+      challenges2 <- left_join(challenges2,DailyNs)
+      vote_history2 <- left_join(vote_history2,DailyNs)
       tribe_mapping2 <- left_join(tribe_mapping2,DailyNs)
+      bootmapping2 <- left_join(bootmapping2,DailyNs)
       
       
-## make the the challenges tibbles able to be exported to CSV
-    # create a holding dataset for the challenges data
-      #create data frame with 0 rows and 17 columns
-       challenges2 <- data.frame(matrix(ncol = length(c(names(challenges)[names(challenges) != "winners"],names(challenges$winners[[1]]))), nrow = 0))
-       
-      #provide column names
-        colnames(challenges2) <- c(names(challenges)[names(challenges) != "winners"],names(challenges$winners[[1]]))
-    
-    # for each of the season-episode-day-challenge types, duplicate that information for each of the winners
-        for (i in 1:dim(challenges)[1]) {
-          temp <- cbind(as.data.frame(challenges[i,c(names(challenges)[names(challenges) != "winners"])]),as.data.frame(challenges$winners[[i]]))
-          
-          challenges2 <- rbind(challenges2,temp)
-          #print(challenges2)
-        }
-        
-    # Data cleaning
-        # want Outcasts to be "The Outcasts"
-          challenges2$winning_tribe[challenges2$winning_tribe == "OutCasts"] <- "The Outcasts"
-        
-    # add on challenge description
-      challenges2 <- left_join(challenges2,challengesdesc,
-                               by=c("challenge_id","challenge_name"))
-      
-    # if the challenge was post-merge, add in "individual challenge" for the tribe name
-      challenges2$winning_tribe[is.na(challenges2$winning_tribe) & challenges2$outcome_type %in% c("Individual","Team")] <- "(Individual challenge)"
-    
-# align variable names
-  challenges2 <- challenges2 %>%
-                  rename(racecharacteristic=race,castaway_id=winner_id,castaway=winner,full_name=winner_fullname,gender=winner_gender,race=winner_race,ethnicity=winner_ethnicity,poc=winner_poc,tribe=winning_tribe)
-  
-      
+
 ###############################################################
 ## save the data as separate datasets before using them to create additional datasets
 write.csv(castawaydetails,paste(savedir,"survivoR_01_castawayDetails_cleaned.csv",sep=""),row.names=F)
 write.csv(castaways,paste(savedir,"survivoR_02_castaways_cleaned.csv",sep=""),row.names=F)
 write.csv(season_summary,paste(savedir,"survivoR_03_seasonSummary_cleaned.csv",sep=""),row.names=F)
-write.csv(vote_history3,paste(savedir,"survivoR_04_votehx_cleaned.csv",sep=""),row.names=F)
+write.csv(vote_history2,paste(savedir,"survivoR_04_votehx_cleaned.csv",sep=""),row.names=F)
 write.csv(challenges2,paste(savedir,"survivoR_05_challenges_cleaned.csv",sep=""),row.names=F)
-write.csv(confessionals3,paste(savedir,"survivoR_06_confessionals_cleaned.csv",sep=""),row.names=F)
-write.csv(hidden_idols3,paste(savedir,"survivoR_07_idols_cleaned.csv",sep=""),row.names=F)
-write.csv(advmvmt3,paste(savedir,"survivoR_07a_advantagesMvmt_cleaned.csv",sep=""),row.names=F)
+write.csv(confessionals2,paste(savedir,"survivoR_06_confessionals_cleaned.csv",sep=""),row.names=F)
+write.csv(advmvmt2,paste(savedir,"survivoR_07a_advantagesMvmt_cleaned.csv",sep=""),row.names=F)
 write.csv(advdetail,paste(savedir,"survivoR_07b_advantagesDetail_cleaned.csv",sep=""),row.names=F)
 write.csv(jury_votes2,paste(savedir,"survivoR_08_juryvotes_cleaned.csv",sep=""),row.names=F)
 write.csv(viewers,paste(savedir,"survivoR_09_viewers_cleaned.csv",sep=""),row.names=F)
 write.csv(tribe_mapping2,paste(savedir,"survivoR_10_tribemap_cleaned.csv",sep=""),row.names=F)
+write.csv(bootmapping2,paste(savedir,"survivoR_11_bootmap_cleaned.csv",sep=""),row.names=F)
     
 #############################################################################################################################
 #############################################################################################################################
@@ -479,27 +441,18 @@ library(tidyverse,lib="C:/Program Files/R/R-4.1.1/library");library(tidygraph,li
 savedir <- "H:/R/survivoR/02_cleaned_data/"
 
 tribemap <- read.csv(paste(savedir,"survivoR_10_tribemap_cleaned.csv",sep=""),header=T)
-castaways <- read.csv(paste(savedir,"survivoR_02_castaways_cleaned.csv",sep=""),header=T)
-# get the tribe info
-castaways <- castaways %>% filter(!(is.na(castaway_id))) %>% 
-  group_by(version,version_season,season,castaway_id) %>%
-  filter(day %in% max(day)) %>%
-  select(1:7,17:20)
 
 ## Data set up:
     
     ## Let's get a simplified dataset that is just season, day, castaway_id, and tribe name & status
-    tribesimpl <- unique(tribemap[!(is.na(tribemap$castaway_id)),c("version","version_season","season","day","castaway_id","tribe","tribe_status")])
+    tribesimpl <- tribemap %>% # unique(tribemap[!(is.na(tribemap$castaway_id)),c("version","version_season","season","day","castaway_id","tribe","tribe_status")])
+                    select(version,version_season,season_name,season,day,castaway,castaway_id,tribe,tribe_status) %>%
+                    distinct()
     
     # for edge of extinction & redemption, want that to show up in tribe name
     tribesimpl$tribe[tribesimpl$tribe_status == "Edge of Extinction"] <- "Edge of Extinction"
     tribesimpl$tribe[tribesimpl$tribe_status == "Redemption Island"] <- "Redemption Island"
-    
-    
-    ## Add on additional information that will help us order the data
-    tribesimpl <- left_join(tribesimpl,
-                            castaways,
-                            by=c("version","version_season","season","castaway_id")) %>% distinct()
+
     ## Y values
     # Get Y values by tribe status
         arrangement <- function(tribestatuscateg) {
@@ -609,6 +562,19 @@ castaways <- castaways %>% filter(!(is.na(castaway_id))) %>%
           
         }      
 
+   ## add on summary information for each castaway in each season     
+        tribemapreorg <- tribemapreorg %>%
+          left_join(tribemap %>% 
+                      select(version_season,castaway_id,tribe,tribe_status,day) %>%
+                      filter(tribe != "Redemption Island" & tribe != "Edge of Extinction") %>%
+                      group_by(version_season,castaway_id,tribe_status) %>%
+                      filter(day==min(day)) %>%
+                      select(!day) %>%
+                      distinct() %>%
+                      pivot_wider(values_from=tribe,names_from = tribe_status)
+          )        
+        
+        
 write.csv(tribemapreorg,paste(savedir,"survivoR_TribeMap_DayByDay.csv",sep=""),row.names=F)      
 
 
@@ -619,7 +585,7 @@ write.csv(tribemapreorg,paste(savedir,"survivoR_TribeMap_DayByDay.csv",sep=""),r
 #############################################################################################################################
 
 rm(list=ls())
-library(tidyverse,lib="C:/Program Files/R/R-4.1.1/library"); library(survivoR,lib="C:/Program Files/R/R-4.1.1/library"); library(ggpubr,lib="C:/Program Files/R/R-4.1.1/library")
+library(tidyverse,lib="C:/Program Files/R/R-4.1.1/library");  library(ggpubr,lib="C:/Program Files/R/R-4.1.1/library")
 savedir <- "H:/R/survivoR/02_cleaned_data/"
 
 
@@ -917,9 +883,9 @@ mvmt <- read.csv(paste(savedir,"survivoR_07a_advantagesMvmt_cleaned.csv",sep="")
           summarize(madecase=sum(count))
         
         ## Made merge
-        timesmademerge <- castaways %>% select(version,version_season,season,castaway_id,merged_tribe) %>%
-          filter(!(is.na(merged_tribe))) %>%
-          mutate(count=1) %>% select(!merged_tribe) %>% distinct() %>%
+        timesmademerge <- castaways %>% select(version,version_season,season,castaway_id,Merged) %>%
+          filter(!(is.na(Merged))) %>%
+          mutate(count=1) %>% select(!Merged) %>% distinct() %>%
           group_by(version,castaway_id) %>% 
           summarize(mademerge=sum(count))
         

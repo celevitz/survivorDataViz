@@ -1,6 +1,6 @@
 ## Author: Carly Levitz
 ## Date written: 2021-12-09
-## Date updated: 2022-03-14
+## Date updated: 2022-09-27
 ## Purpose: data cleaning of Survivor data  - prep the data from https://github.com/doehm/survivoR and then use these data in Tableau
 ##    https://public.tableau.com/app/profile/carly.levitz/viz/SurvivorCBSData-Acknowledgements/Acknkowledgements
 ## File organization:
@@ -41,19 +41,19 @@ tribe_palettes <- tribe_colours
 
       ###############################################################
     ## save the data as separate datasets before using them to create additional datasets
-    write.csv(castawaydetails,paste(savedir,"RawNonUSsurvivoR_01_castawayDetails_cleaned.csv",sep=""),row.names=F)
-    write.csv(castaways,paste(savedir,"RawNonUSsurvivoR_02_castaways_cleaned.csv",sep=""),row.names=F)
-    write.csv(season_summary,paste(savedir,"RawNonUSsurvivoR_03_seasonSummary_cleaned.csv",sep=""),row.names=F)
-    write.csv(vote_history,paste(savedir,"RawNonUSsurvivoR_04_votehx_cleaned.csv",sep=""),row.names=F)
-    write.csv(challenges,paste(savedir,"RawNonUSsurvivoR_05_challenges_cleaned.csv",sep=""),row.names=F)
-    write.csv(confessionals,paste(savedir,"RawNonUSsurvivoR_06_confessionals_cleaned.csv",sep=""),row.names=F)
-    write.csv(advmvmt,paste(savedir,"RawNonUSsurvivoR_07a_advantagesMvmt_cleaned.csv",sep=""),row.names=F)
-    write.csv(advdetail,paste(savedir,"RawNonUSsurvivoR_07b_advantagesDetail_cleaned.csv",sep=""),row.names=F)
-    write.csv(jury_votes,paste(savedir,"RawNonUSsurvivoR_08_juryvotes_cleaned.csv",sep=""),row.names=F)
-    write.csv(viewers,paste(savedir,"RawNonUSsurvivoR_09_viewers_cleaned.csv",sep=""),row.names=F)
-    write.csv(tribe_mapping,paste(savedir,"RawNonUSsurvivoR_10_tribemap_cleaned.csv",sep=""),row.names=F)
-    write.csv(bootmapping,paste(savedir,"RawNonUSsurvivoR_11_bootmap_cleaned.csv",sep=""),row.names=F)
-    write.csv(tribe_palettes,paste(savedir,"RawNonUSsurvivoR_12_tribecolors_cleaned.csv",sep=""),row.names=F)
+    #write.csv(castawaydetails,paste(savedir,"RawNonUSsurvivoR_01_castawayDetails_cleaned.csv",sep=""),row.names=F)
+    #write.csv(castaways,paste(savedir,"RawNonUSsurvivoR_02_castaways_cleaned.csv",sep=""),row.names=F)
+    #write.csv(season_summary,paste(savedir,"RawNonUSsurvivoR_03_seasonSummary_cleaned.csv",sep=""),row.names=F)
+    #write.csv(vote_history,paste(savedir,"RawNonUSsurvivoR_04_votehx_cleaned.csv",sep=""),row.names=F)
+    #write.csv(challenges,paste(savedir,"RawNonUSsurvivoR_05_challenges_cleaned.csv",sep=""),row.names=F)
+    #write.csv(confessionals,paste(savedir,"RawNonUSsurvivoR_06_confessionals_cleaned.csv",sep=""),row.names=F)
+    #write.csv(advmvmt,paste(savedir,"RawNonUSsurvivoR_07a_advantagesMvmt_cleaned.csv",sep=""),row.names=F)
+    #write.csv(advdetail,paste(savedir,"RawNonUSsurvivoR_07b_advantagesDetail_cleaned.csv",sep=""),row.names=F)
+    #write.csv(jury_votes,paste(savedir,"RawNonUSsurvivoR_08_juryvotes_cleaned.csv",sep=""),row.names=F)
+    #write.csv(viewers,paste(savedir,"RawNonUSsurvivoR_09_viewers_cleaned.csv",sep=""),row.names=F)
+    #write.csv(tribe_mapping,paste(savedir,"RawNonUSsurvivoR_10_tribemap_cleaned.csv",sep=""),row.names=F)
+    #write.csv(bootmapping,paste(savedir,"RawNonUSsurvivoR_11_bootmap_cleaned.csv",sep=""),row.names=F)
+    #write.csv(tribe_palettes,paste(savedir,"RawNonUSsurvivoR_12_tribecolors_cleaned.csv",sep=""),row.names=F)
     
 #############################################################################################################################
 #############################################################################################################################
@@ -63,7 +63,32 @@ tribe_palettes <- tribe_colours
 
   # clean the result data
     castaways$result[castaways$result %in% c("2nd Runner-up","2nd runner-up")] <- "2nd runner-up"
+    castaways$result[castaways$result %in% c("Runner up")] - "Runner-up"
+    castaways$result[castaways$result %in% c("Sole survivor")] <- "Sole Survivor"
     castaways$day[castaways$version_season == "SA09" & castaways$castaway %in% c("Shane","Dino")] <- 39
+    
+    castaways$day[castaways$version_season == "AU07" & castaways$castaway %in% c("Andy")] <- 2
+    castaways$day[castaways$version_season == "AU07" & castaways$castaway %in% c("Briana")] <- 5
+    castaways$day[castaways$version_season == "AU07" & castaways$castaway %in% c("Kate")] <- 7
+    castaways$day[castaways$version_season == "AU07" & castaways$castaway %in% c("Alex")] <- 12
+    castaways$day[castaways$version_season == "AU07" & castaways$castaway %in% c("Jay")] <- 14
+    castaways$day[castaways$version_season == "AU07" & castaways$castaway %in% c("Sandra")] <- 16
+    castaways$day[castaways$version_season == "AU07" & castaways$castaway %in% c("Sophie")] <- 18
+    castaways$day[castaways$version_season == "AU07" & castaways$castaway %in% c("Amy")] <- 20
+    castaways$day[castaways$version_season == "AU07" & castaways$castaway %in% c("Nina")] <- 22
+    castaways$day[castaways$version_season == "AU07" & castaways$castaway %in% c("Croc")] <- 23
+    castaways$day[castaways$version_season == "AU07" & castaways$castaway %in% c("Ben")] <- 24
+    castaways$day[castaways$version_season == "AU07" & castaways$castaway %in% c("Khanh")] <- 27
+    castaways$day[castaways$version_season == "AU07" & castaways$castaway %in% c("Mel")] <- 28
+    castaways$day[castaways$version_season == "AU07" & castaways$castaway %in% c("Jesse")] <- 30
+    castaways$day[castaways$version_season == "AU07" & castaways$castaway %in% c("Michelle")] <- 36
+    castaways$day[castaways$version_season == "AU07" & castaways$castaway %in% c("Jordan")] <- 39
+    castaways$day[castaways$version_season == "AU07" & castaways$castaway %in% c("Sam")] <- 40
+    castaways$day[castaways$version_season == "AU07" & castaways$castaway %in% c("David")] <- 42
+    castaways$day[castaways$version_season == "AU07" & castaways$castaway %in% c("Jordie")] <- 43
+    castaways$day[castaways$version_season == "AU07" & castaways$castaway %in% c("KJ")] <- 45
+    castaways$day[castaways$version_season == "AU07" & castaways$castaway %in% c("Josh")] <- 46
+    castaways$day[castaways$version_season == "AU07" & castaways$castaway %in% c("Mark","Shay","Chrissy")] <- 47
 
   ## My data source (survivor wiki fandom) only have pages for Asian, Latin American, and Black. 
   ## I found a reddit page that had Jewish players. 
@@ -421,154 +446,7 @@ write.csv(bootmapping2,paste(savedir,"survivoR_11_bootmap_cleaned.csv",sep=""),r
     
 #############################################################################################################################
 #############################################################################################################################
-## Section 2: Tribe Map: day by day
-#############################################################################################################################
-#############################################################################################################################
-rm(list=ls())
-library(tidyverse,lib="C:/Program Files/R/R-4.1.1/library");library(tidygraph,lib="C:/Program Files/R/R-4.1.1/library"); library(survivoR,lib="C:/Program Files/R/R-4.1.1/library"); library(ggpubr,lib="C:/Program Files/R/R-4.1.1/library"); library(ggrepel,lib="C:/Program Files/R/R-4.1.1/library");library(ggraph,lib="C:/Program Files/R/R-4.1.1/library");  
-savedir <- "H:/R/survivoR/02_cleaned_data/"
-
-tribemap <- read.csv(paste(savedir,"survivoR_10_tribemap_cleaned.csv",sep=""),header=T)
-
-## Data set up:
-    
-    ## Let's get a simplified dataset that is just season, day, castaway_id, and tribe name & status
-    tribesimpl <- tribemap %>% # unique(tribemap[!(is.na(tribemap$castaway_id)),c("version","version_season","season","day","castaway_id","tribe","tribe_status")])
-                    select(version,version_season,season_name,season,day,castaway,castaway_id,tribe,tribe_status) %>%
-                    distinct()
-    
-    # for edge of extinction & redemption, want that to show up in tribe name
-    tribesimpl$tribe[tribesimpl$tribe_status == "Edge of Extinction"] <- "Edge of Extinction"
-    tribesimpl$tribe[tribesimpl$tribe_status == "Redemption Island"] <- "Redemption Island"
-
-    ## Y values
-    # Get Y values by tribe status
-        arrangement <- function(tribestatuscateg) {
-          # for now, just keep one stage/phase of the game
-          tempdata <- tribesimpl[tribesimpl$tribe_status %in% tribestatuscateg,]
-          
-          # organize the Y values within a season
-          for (sn in seq(1,max(tempdata$season),1)) {
-            
-            # This counter will tick up and will become the Y value.
-            ## need it to be different for Extinction/Redemption
-            tempcount <- 1
-            
-            # Want each castaway to be their own line, and organize the original Ys by their original tribe
-            for (tr in unique(tempdata$tribe[tempdata$season == sn])) {
-              for (c in rev(unique(tempdata$castaway_id[tempdata$tribe == tr & tempdata$season == sn]))) {
-                
-                tempdata$y[tempdata$tribe == tr & tempdata$season == sn & tempdata$castaway_id==c] <- tempcount
-                # increase the y value for each subsequent castaway
-                tempcount <- tempcount+1
-              } # close castaway loop
-              # Add a break between tribes so it's easier to read on the chart where the delineations between tribes are
-              tempcount <- tempcount+2
-            } # close tribe loop
-          } # close season loop
-          # To be able to append this tribe status data to full dataset, need to print it (for some reason)
-          print(tempdata)
-        } #close function loop
-        
-        # Use this function for all tribe statuses, and then append the data together
-        tribemapreorg <- rbind(arrangement(tribestatuscateg="Original"),
-                               arrangement(tribestatuscateg="Swapped"),
-                               arrangement(tribestatuscateg="Swapped_2"),
-                               # arrangement(tribestatuscateg="Swapped_3"),
-                               arrangement(tribestatuscateg="Merged"))
-
-  # for redemption & extinction, give each person their own row  
-      seasonswithredex <- unique(tribesimpl$season_name[tribesimpl$tribe_status %in% c("Edge of Extinction","Redemption Island","Exile Island")])
-      tempdata <- tribesimpl[tribesimpl$season_name %in% seasonswithredex,]
-      for (sn in seasonswithredex) {
-        
-        # number of people who were on extinction/redemption
-        numberonredex <- length(unique(tempdata$castaway_id[tempdata$season_name %in% sn & tempdata$tribe %in% c("Redemption Island","Edge of Extinction")]))
-        # what's the maximum y value i have for the NON red/ex
-        maxy <- max(tribemapreorg$y[tribemapreorg$season_name %in% sn])
-        
-        tempy <- 1
-        for (c in rev(unique(tribesimpl$castaway_id[tribesimpl$season_name %in% sn & tribesimpl$tribe %in% c("Redemption Island","Edge of Extinction")]))) {
-          tempdata$y[tempdata$castaway_id %in% c & tempdata$season_name %in% sn & tempdata$tribe %in% c("Redemption Island","Edge of Extinction")] <- maxy+tempy
-          tempy <- tempy+1
-        }
-      }
-      tempdata <- tempdata[!(is.na(tempdata$y)),]
-      tribemapreorg <- rbind(tribemapreorg,tempdata) 
-      tribemapreorg <- tribemapreorg[order(tribemapreorg$season,tribemapreorg$day),]
-
-    ## Have a variable that will become the label for the "line" that is each castaway. 
-    ## We only want to label the start and end point for each Castaway in a season    
-        tribemapreorg$labeltext <- ""
-        for (vzn in unique(tribemap$version)) {
-          for (sn in 1:max(tribemapreorg$season[tribemapreorg$version == vzn])) {
-            for (c in unique(tribemapreorg$castaway_id[tribemapreorg$season == sn & tribemapreorg$version == vzn])) {
-              # What is the first day that the castaway shows up in the data?
-              minday <- min(tribemapreorg$day[tribemapreorg$season == sn & tribemapreorg$castaway_id == c & tribemapreorg$version == vzn],na.rm=T)
-              temptext <- tribemapreorg$castaway[tribemapreorg$day == minday & tribemapreorg$season == sn & tribemapreorg$castaway_id == c & tribemapreorg$version == vzn]
-              tribemapreorg$labeltext[tribemapreorg$day == minday & tribemapreorg$season == sn & tribemapreorg$castaway_id == c & tribemapreorg$version == vzn] <- temptext
-              
-              # what is the last day the castaway shows up in the data?
-              maxday <- max(tribemapreorg$day[tribemapreorg$season == sn & tribemapreorg$castaway_id == c & tribemapreorg$version == vzn],na.rm=T)
-              tribemapreorg$labeltext[tribemapreorg$day == maxday & tribemapreorg$season == sn & tribemapreorg$castaway_id == c & tribemapreorg$version == vzn] <- temptext
-              
-            } # Close castaway loop
-          } # Close season loop
-        } # close the country/version loop
-
-  # Get names of each tribe on the first day of their existence
-  # We'll print that tribe name above the Castaways on that tribe. So need to get the max y-value of the castaways on that tribe
-      tribenames <- tribemapreorg[,c("version","version_season","season","day","tribe","tribe_status","y")]
-  
-  # get a unique tribe name, to distinguish original tribes from swapped:
-      tribenames$tribename <- paste(tribenames$tribe,tribenames$tribe_status,sep="-")
-  
-      for (tr in unique(tribenames$tribename)) {
-        # first day of tribe's existence:
-        min_day <- min(tribenames$day[tribenames$tribename == tr])
-        tribenames$keep[tribenames$tribename == tr & tribenames$day == min_day] <- 1
-        
-        # the y-value we'll use for graphing
-        max_y <- max(tribenames$y[tribenames$tribename == tr])
-        tribenames$YtoUse[tribenames$tribename == tr] <- max_y
-      }
-      tribenames <- unique(tribenames[tribenames$keep %in% 1,c("version","version_season","season","day","tribe","tribe_status","tribename","YtoUse")])
-
-    # bring this back onto the original data
-        tribemapreorg <- left_join(tribemapreorg,tribenames,by=c("version","version_season","season","day","tribe","tribe_status"))
-        # We don't want the second swaps to show up as "Swapped_2", so make it a little easier to understand
-        tribemapreorg$tribename <- gsub("Swapped_2","Second swap",tribemapreorg$tribename)
-        tribemapreorg$tribename <- gsub("Swapped_3","Third swap",tribemapreorg$tribename)
-        tribemapreorg$tribename <- gsub("-Edge of Extinction","",tribemapreorg$tribename)
-        tribemapreorg$tribename <- gsub("-Redemption Island","",tribemapreorg$tribename)
-        
-    ## Add in edge of extinction, redemptoin to the start of all relevant seasons  
-    # but only want it to show up once (if I leave all the rows filled in with the tribe name information, then it will print that over itself again and again)
-        for (tr in unique(tribemapreorg$tribename[!(is.na(tribemapreorg$tribename))])) {
-          miny <- min(tribemapreorg$y[tribemapreorg$tribename == tr],na.rm=T)
-          tribemapreorg$YtoUse[tribemapreorg$tribename == tr & tribemapreorg$y != miny] <- NA
-          
-        }      
-
-   ## add on summary information for each castaway in each season     
-        tribemapreorg <- tribemapreorg %>%
-          left_join(tribemap %>% 
-                      select(version_season,castaway_id,tribe,tribe_status,day) %>%
-                      filter(tribe != "Redemption Island" & tribe != "Edge of Extinction") %>%
-                      group_by(version_season,castaway_id,tribe_status) %>%
-                      filter(day==min(day)) %>%
-                      select(!day) %>%
-                      distinct() %>%
-                      pivot_wider(values_from=tribe,names_from = tribe_status)
-          )        
-        
-        
-write.csv(tribemapreorg,paste(savedir,"survivoR_TribeMap_DayByDay.csv",sep=""),row.names=F)      
-
-
-#############################################################################################################################
-#############################################################################################################################
-## Section 3: Individual superlatives
+## Section 2: Individual superlatives
 #############################################################################################################################
 #############################################################################################################################
 

@@ -1,23 +1,18 @@
 ## Author: Carly Levitz
 ## Date written: 2021-12-09
-## Date updated: 2022-09-27
+## Date updated: 2023-02-25
 ## Purpose: data cleaning of Survivor data  - prep the data from https://github.com/doehm/survivoR and then use these data in Tableau
 ##    https://public.tableau.com/app/profile/carly.levitz/viz/SurvivorCBSData-Acknowledgements/Acknkowledgements
 ## File organization:
 ##    Section 1: Clean the data for how I want to use it in Tableau
-##    Section 2: Create a dataset for the tribe mapping. It's pretty inelegant but does the trick.
-##    Section 3: Calculate different types of superlatives for each castaway. Superlatives can be within a season (e.g., most votes received in one season) or across seasons (e.g., most individual immunity wins across seasons played)
+##    Section 2: Calculate different types of superlatives for each castaway. Superlatives can be within a season (e.g., most votes received in one season) or across seasons (e.g., most individual immunity wins across seasons played)
 
 rm(list=ls()); .libPaths("C:/Program Files/R/R-4.1.1/library")
-#install.packages("rlang", .libPaths("C:/Program Files/R/R-4.1.1/library"))
 
 library(devtools,lib="C:/Program Files/R/R-4.1.1/library"); library(tidyverse,lib="C:/Program Files/R/R-4.1.1/library"); library(janitor,lib="C:/Program Files/R/R-4.1.1/library")
 devtools::install_github("doehm/survivoR")
 
-
-
-#dat <- import_non_us_data()
-library(survivoR,lib="C:/Program Files/R/R-4.1.1/library")
+#library(survivoR,lib="C:/Program Files/R/R-4.1.1/library")
 savedir <- "H:/R/survivoR/02_cleaned_data/"
 
 
@@ -37,7 +32,7 @@ bootmapping <- boot_mapping
 viewers <- viewers 
 tribe_palettes <- tribe_colours 
 
-## Have raw international data for review
+## Have raw  data for review
 
       ###############################################################
     ## save the data as separate datasets before using them to create additional datasets
@@ -62,8 +57,8 @@ tribe_palettes <- tribe_colours
 #############################################################################################################################  
 
   # clean the result data
-    castaways$result[castaways$result %in% c("2nd Runner-up","2nd runner-up")] <- "2nd runner-up"
-    castaways$result[castaways$result %in% c("Runner up")] - "Runner-up"
+    castaways$result[castaways$result %in% c("2nd Runner-up","2nd runner up")] <- "2nd runner-up"
+    castaways$result[castaways$result %in% c("Runner up")] <- "Runner-up"
     castaways$result[castaways$result %in% c("Sole survivor")] <- "Sole Survivor"
     castaways$day[castaways$version_season == "SA09" & castaways$castaway %in% c("Shane","Dino")] <- 39
     
@@ -367,9 +362,9 @@ tribe_palettes <- tribe_colours
     # want all tribe names in the castaway data set  
       castawaystribes <- tribe_mapping %>% 
                           select(version_season,castaway_id,tribe,tribe_status,day) %>%
-                          filter(tribe != "Redemption Island" & tribe != "Edge of Extinction" & tribe != "Black" & tribe != "Exile Island" & tribe != "Redemption Rock" & tribe != "None" & tribe != "Dead Man's Island") %>%
+                          filter(tribe_status %in% c("Original","Swapped","Swapped_2","Swapped_3","Merged")) %>%
                           group_by(version_season,castaway_id,tribe_status) %>%
-                          filter(day==min(day)) %>%
+                          filter(day==min(day) | is.na(day)) %>%
                           select(!day) %>%
                           distinct() %>%
                           pivot_wider(values_from=tribe,names_from = tribe_status)
@@ -377,7 +372,7 @@ tribe_palettes <- tribe_colours
       castawaystribes$Merged[castawaystribes$version_season == "US41" & !(is.na(castawaystribes$Merged))] <- "Via Kana"
       castawaystribes$Merged[castawaystribes$version_season == "US42" & !(is.na(castawaystribes$Merged))] <- "Kula Kula"
       
-      castaways <- left_join(castaways %>% select(!original_tribe),castawaystribes)
+      castaways <- left_join(castaways %>% select(!original_tribe),castawaystribes,by=c("version_season","castaway_id"))
       
 ## Add Additional Information to all tables
   fullnames <- castawaydetails %>% select(full_name,castaway_id,castaway,gender,race,ethnicity,poc) %>%
@@ -385,8 +380,8 @@ tribe_palettes <- tribe_colours
                left_join(  
                   castaways %>% select(castaway_id,version_season,age,day,order,result,episode,jury_status) %>%
                     group_by(version_season,castaway_id) %>%
-                    mutate(maxday=max(day)) %>%
-                    filter(day==maxday) %>% select(!maxday)
+                    mutate(maxday=max(day),maxorder=max(order)) %>%
+                    filter(day==maxday & maxorder==order) %>% select(!maxday)
                )
   
   
@@ -410,21 +405,14 @@ tribe_palettes <- tribe_colours
   tribe_mapping2 <- left_join(tribe_mapping,fullnames %>% rename(daylasteduntil=day,episodelastedthrough=episode),
                             by=c("version_season","castaway","castaway_id")) 
   
-  vote_history2 <- left_join(vote_history,
+  vote_history2 <- vote_history %>% left_join(
                              fullnames %>% 
-                               rename(episodelasteduntil=episode,daylasteduntil=day,ordervotedoff=order)) %>%
-                  left_join(fullnames %>%
-                              rename_with(~paste(.x,"vote",sep="")) %>%
-                              rename(vote_id=castaway_idvote,vote=castawayvote,version_season=version_seasonvote)) %>%
-                  left_join(fullnames %>%
-                              rename_with(~paste(.x,"voted_out",sep="")) %>%
-                              rename(voted_out_id=castaway_idvoted_out,voted_out=castawayvoted_out,version_season=version_seasonvoted_out)) 
-  
-
-      
-  challenges2 <- left_join(challenges,
+                               rename(episodelasteduntil=episode,daylasteduntil=day,ordervotedoff=order),
+                             by=c("version_season","castaway_id","castaway")) 
+  challenges2 <- left_join(challenges %>% rename(winloss=result),
                            fullnames %>% 
-                             rename(daylasteduntil=day,episodelastedthrough=episode,bootorder=order)) 
+                             rename(daylasteduntil=day,episodelastedthrough=episode,bootorder=order),
+                           by=c("version_season","castaway_id","castaway")) 
   
       
       
@@ -464,11 +452,14 @@ tribemap <- read.csv(paste(savedir,"survivoR_10_tribemap_cleaned.csv",sep=""),he
 mvmt <- read.csv(paste(savedir,"survivoR_07a_advantagesMvmt_cleaned.csv",sep=""),header=T) %>%
           mutate(advtype = substr(advantage_id,3,4)) 
 
+# WIP: Dan needs to fix then I need to change code --  We're in the middle of fixing some stuff on the back-end...for now, do this manual fix.
+  mvmt$advtype[mvmt$version_season %in% c("US43","SA01")] <-  substr(mvmt$advantage_id[mvmt$version_season %in% c("US43","SA01")],5,6)
+
 ## Superlatives for an individual
     ## A. Challenge superlatives for the individual
           ## number of individual immunity wins in one season and overall
           indivimmwinsoneseason <- challenges %>% filter(outcome_type == "Individual") %>% 
-            filter(result == "Won") %>%
+            filter(winloss == "Won") %>%
             filter(grepl("Immunity",challenge_type)) %>%
             select(version,version_season,season,castaway_id,challenge_name) %>%
             group_by(version,version_season,season,castaway_id) %>%
@@ -479,7 +470,7 @@ mvmt <- read.csv(paste(savedir,"survivoR_07a_advantagesMvmt_cleaned.csv",sep="")
           
           ## number of individual reward wins (in one season and across seasons)
           indivrewwinsoneseason <- challenges %>% filter(outcome_type == "Individual") %>% 
-            filter(result == "Won") %>%
+            filter(winloss == "Won") %>%
             filter(grepl("Reward",challenge_type)) %>%
             select(version,version_season,season,castaway_id,challenge_name) %>%
             group_by(version,version_season,season,castaway_id) %>%
@@ -490,7 +481,7 @@ mvmt <- read.csv(paste(savedir,"survivoR_07a_advantagesMvmt_cleaned.csv",sep="")
           
           ## number of tribal immunity wins (in one season and across seasons)
           tribalimmwinsoneseason <- challenges %>% filter(outcome_type == "Tribal") %>% 
-            filter(result == "Won") %>%
+            filter(winloss == "Won") %>%
             filter(grepl("Immunity",challenge_type)) %>%
             select(version,version_season,season,castaway_id,challenge_name) %>%
             group_by(version,version_season,season,castaway_id) %>%
@@ -503,7 +494,7 @@ mvmt <- read.csv(paste(savedir,"survivoR_07a_advantagesMvmt_cleaned.csv",sep="")
           
           ## number of tribal reward wins (in one season and across seasons)
           tribalrewwinsoneseason <- challenges %>% filter(outcome_type == "Tribal") %>% 
-            filter(result == "Won") %>%
+            filter(winloss == "Won") %>%
             filter(grepl("Reward",challenge_type)) %>%
             select(version,version_season,season,castaway_id,challenge_name) %>%
             group_by(version,version_season,season,castaway_id) %>%
@@ -617,19 +608,26 @@ mvmt <- read.csv(paste(savedir,"survivoR_07a_advantagesMvmt_cleaned.csv",sep="")
           mutate(count=1) %>%
           group_by(version,version_season,season,castaway_id) %>%
           summarize(accuratevotescast=sum(count)) 
+        accuratevotescastExcludingTies <- votehx %>% 
+          filter(!(is.na(vote_id))) %>%
+          select(version,version_season,season,castaway_id,tie,vote_id,voted_out_id) %>%    
+          filter(vote_id == voted_out_id & tie == FALSE) %>%
+          mutate(count=1) %>%
+          group_by(version,version_season,season,castaway_id) %>%
+          summarize(accuratevotescastNonTie=sum(count)) 
         
         # Bring tribal council superlatives together
-          tribalcouncilindivsuper <- full_join(full_join(full_join(full_join(
+          tribalcouncilindivsuper <- full_join(full_join(full_join(full_join(full_join(
             full_join(
               full_join(
                 full_join(
                   full_join(
                     full_join(premerge,votesreceivedinoneseason),votesreceived),
                   votesnullifiedoneseason),votesnullified),
-              votescast),accuratevotescast),totaltcs),receivedvotesatTCs),dayoffirstvotereceived) %>%
+              votescast),accuratevotescast),accuratevotescastExcludingTies),totaltcs),receivedvotesatTCs),dayoffirstvotereceived) %>%
             group_by(version,version_season,season,castaway_id) %>%
             mutate(percentaccuracyIncludingTies=accuratevotescast/votescast,
-                   percentaccuracy=accuratevotescast/votescastNonTie)
+                   percentaccuracy=accuratevotescastNonTie/votescastNonTie)
     
     ## C. Idol information  
       ## IDOLS!!!!!!!!!!!!!
@@ -699,16 +697,7 @@ mvmt <- read.csv(paste(savedir,"survivoR_07a_advantagesMvmt_cleaned.csv",sep="")
           summarize(totalconfessionals=sum(confessional_count),totalpeople=n_distinct(castaway_id)) %>%
           mutate(resultavgconf=totalconfessionals/totalpeople) %>%
           select(version,result,resultavgconf)
-        
-        # confessional average for the same result by gender and race
-        #confessionalavgbyresultGenPoc <- confessionals %>% group_by(version,result,gender,poc) %>% 
-        #  summarize(totalconfessionals=sum(confessional_count),totalpeople=n_distinct(castaway_id)) %>%
-        #  mutate(resultgenderpocavgconf=totalconfessionals/totalpeople) %>%
-        #  select(version,result,gender,poc,resultgenderpocavgconf)  
-        
-        ## Bring the two averages about result together
-        #confessionalaverages <- full_join(confessionalavgbyresultGenPoc,confessionalavgbyresult)
-    
+
     ## E. Overall information
         ## number of times played
         timesplayed<- castaways %>% select(version,version_season,season,castaway_id) %>% 
@@ -759,11 +748,10 @@ mvmt <- read.csv(paste(savedir,"survivoR_07a_advantagesMvmt_cleaned.csv",sep="")
         for (var in 5:dim(individualsuperlatives)[2]) {
           individualsuperlatives[is.na(individualsuperlatives[,var]),var] <- 0
         }
-        #individualsuperlatives <- individualsuperlatives %>% pivot_longer(!(c("version","version_season","season","castaway_id")),names_to="variable",values_to="value")
     
     # Add in additional variables
         finaldata <- castaways %>% group_by(version,version_season,season,castaway_id) %>%
-          filter(day==max(day)) %>% 
+          filter(day==max(day) & order == max(order)) %>% 
           select(version,version_season,season,season_name,castaway_id,full_name,castaway,age,day,order,result,jury_status) %>%
           full_join(individualsuperlatives) %>%
           full_join(castawaydetails %>% select(castaway_id,gender,poc)) 
@@ -772,13 +760,8 @@ mvmt <- read.csv(paste(savedir,"survivoR_07a_advantagesMvmt_cleaned.csv",sep="")
         ## Add on result and gender-race-result specific confessional data   
         finaldata <- left_join(finaldata,confessionalavgbyresult)
         
-        # Add marker as to if it is a season-specific statistic or cross-season
-        #finaldata$superlativetype <- "Individual by season"
-        #finaldata$superlativetype[finaldata$variable %in% c("immwins","numberoftimesplayed","rewwins","totaldaysoverall","tribalimmwins","tribalrewwins","votesreceived","votesnullified")] <- "Individual across seasons"
-        
     ## for days until first vote, if they never received a vote, replace the 0 with the day they lasted in the game (should only be relevant for people who made it to final tribal council, people who were medi-vac'd, elimiinated by rocks or idoled out)
       finaldata$dayoffirstvote[finaldata$dayoffirstvote %in% 0 & !(is.na(finaldata$day))] <- finaldata$day[finaldata$dayoffirstvote %in% 0 & !(is.na(finaldata$day))]
       
 # save data
 write.csv(finaldata,paste(savedir,"survivoR_supeRlatives.csv",sep=""),row.names=F)
-
